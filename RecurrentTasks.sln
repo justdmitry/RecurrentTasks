@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{79344640-D2E5-4A31-880B-C6A9B0CC5F78}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9E4275D8-C660-4EA0-8B82-CA1E1E15DC2F}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RecurrentTasks", "src\RecurrentTasks\RecurrentTasks.xproj", "{0B62072E-451A-46B0-B0BA-3FB2CB25501A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B62072E-451A-46B0-B0BA-3FB2CB25501A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B62072E-451A-46B0-B0BA-3FB2CB25501A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B62072E-451A-46B0-B0BA-3FB2CB25501A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B62072E-451A-46B0-B0BA-3FB2CB25501A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0B62072E-451A-46B0-B0BA-3FB2CB25501A} = {79344640-D2E5-4A31-880B-C6A9B0CC5F78}
+	EndGlobalSection
+EndGlobal
