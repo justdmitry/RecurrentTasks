@@ -1,26 +1,23 @@
-﻿{
-  "version": "1.0.0-*",
+{
+  "version": "1.0.0",
   "title": "RecurrentTasks",
-  "description": "RecurrentTasks for .NET allows you to run recurrent background tasks with specific intervals",
+  "description": "RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...",
   "authors": [ "Dmitry Popov" ],
   "tags": [ "task", "job", "recurrent", "recurring", "aspnetcore" ],
   "projectUrl": "https://github.com/justdmitry/RecurrentTasks",
   "copyright": "Dmitry Popov, 2016",
+  "licenseUrl": "https://github.com/justdmitry/RecurrentTasks/blob/master/LICENSE",
   "repository": {
     "type": "git",
     "url": "https://github.com/justdmitry/RecurrentTasks.git"
   },
-
+  "dependencies": {
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final"
+  },
   "frameworks": {
     "net451": { },
-    "dotnet5.4": {
-      "dependencies": {
-        "Microsoft.CSharp": "4.0.1-beta-23516",
-        "System.Collections": "4.0.11-beta-23516",
-        "System.Linq": "4.0.1-beta-23516",
-        "System.Runtime": "4.0.21-beta-23516",
-        "System.Threading": "4.0.11-beta-23516"
-      }
-    }
+    "netcore50": { },
+    "dotnet5.4": { }
   }
 }

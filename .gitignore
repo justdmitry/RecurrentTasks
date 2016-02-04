@@ -1,2 +1,3 @@
 /.vs
-/src/RecurrentTasks/RecurrentTasks.xproj.user
+/artifacts
+*.user
