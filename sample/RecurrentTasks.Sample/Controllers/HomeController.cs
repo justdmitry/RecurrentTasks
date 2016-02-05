@@ -1,0 +1,50 @@
+﻿namespace RecurrentTasks.Sample.Controllers
+{
+    using System;
+    using Microsoft.AspNet.Mvc;
+
+    public class HomeController : Controller
+    {
+        private SampleTask myTask;
+
+        public HomeController(SampleTask myTask)
+        {
+            this.myTask = myTask;
+        }
+
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Index(string command)
+        {
+
+            switch (command)
+            {
+                case "STOP":
+                    if (myTask.IsStarted)
+                    {
+                        myTask.Stop();
+                    }
+                    break;
+                case "START":
+                    if (!myTask.IsStarted)
+                    {
+                        myTask.Start();
+                    }
+                    break;
+                case "TRYRUN":
+                    if (myTask.IsStarted)
+                    {
+                        myTask.TryRunImmediately();
+                    }
+                    break;
+            }
+
+            return RedirectToAction("Index");
+        }
+    }
+}

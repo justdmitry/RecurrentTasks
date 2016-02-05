@@ -1,0 +1,40 @@
+﻿@inject RecurrentTasks.Sample.SampleTask myTask
+<html>
+<body>
+    <h1>RecurrentTasks Sample</h1>
+    <dl>
+        <dt>IsStarted</dt>
+        <dd>@myTask.IsStarted</dd>
+
+        <dt>Status.LastRunResult</dt>
+        <dd>@myTask.Status.LastRunResult</dd>
+
+        <dt>Status.LastRunTime</dt>
+        <dd>@myTask.Status.LastRunTime</dd>
+
+        <dt>Status.NextRunTime</dt>
+        <dd>@myTask.Status.NextRunTime (in @(myTask.Status.NextRunTime.Subtract(DateTime.Now)))</dd>
+    </dl>
+
+    <form method="post">
+        <p>
+            Actions:
+            <button name="command" value="START">Start</button>
+            <button name="command" value="STOP">Stop</button>
+            <button name="command" value="TRYRUN">TryRunImmediately</button>
+            <br />
+            (you may need to <a href=".">refresh page</a> after 1-2 sec after button is pressed)
+        </p>
+    </form>
+
+    <p>
+        Task messages:
+        <ul>
+            @foreach(var msg in myTask.Messages)
+            {
+                <li>@msg</li>
+            }
+        </ul>
+    </p>
+</body>
+</html>
