@@ -8,11 +8,24 @@ Ideal, when you don't need to run many/heavy tasks and don't want to use "big" s
 
 Written for **ASP.NET vNext** (ASP.NET 5, ASP.NET Core 1).
 
+## Main features
+
+* Start and Stop you task at any time;
+* First run (after Start) is delayed at random value (10-30 sec, customizable) to prevent app delay during statup;
+* Run "immediately" (without waiting for next scheduled time);
+* Change run interval while running;
+* Task `Status` property (extendable) contains:
+ * last/next run times;
+ * last run result (success / exception);
+ * last success run time;
+ * last exception;
+ * total failed runs counter.
+
 ## Usage
 
 ### 1. Create new task class
 
-    public class MyFirstTask : TaskBase<TaskState>
+    public class MyFirstTask : TaskBase<TaskStatus>
     {
       public MyFirstTask(ILoggerFactory loggerFactory, IServiceScopeFactory serviceScopeFactory)
           : base(loggerFactory, TimeSpan.FromMinutes(5), serviceScopeFactory)
@@ -20,12 +33,7 @@ Written for **ASP.NET vNext** (ASP.NET 5, ASP.NET Core 1).
           // Nothing
       }
     
-      public override string Name
-      {
-          get { return nameof(MyFirstTask); }
-      }
-    
-      protected override void Run(IServiceProvider serviceProvider, TaskState state)
+      protected override void Run(IServiceProvider serviceProvider, TaskStatus state)
       {
         // Place your code here
       }
@@ -47,4 +55,9 @@ Written for **ASP.NET vNext** (ASP.NET 5, ASP.NET Core 1).
       ...
     }
   
-And viola! Your task will run every 5 minutes. Until you application alive, of course.
+And viola! Your task will run every 5 minutes (second param when calling :base constructor). Until you application alive, of course.
+
+
+## Installation
+
+Use NuGet package [RecurrentTasks](https://www.nuget.org/packages/RecurrentTasks/)
