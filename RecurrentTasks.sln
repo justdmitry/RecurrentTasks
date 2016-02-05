@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RecurrentTasks", "src\RecurrentTasks\RecurrentTasks.xproj", "{0B62072E-451A-46B0-B0BA-3FB2CB25501A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RecurrentTasks.Tests", "src\RecurrentTasks.Tests\RecurrentTasks.Tests.xproj", "{650A5A85-5956-491E-9312-5E25A27D1108}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{69202143-C3E5-48BB-BAD5-9FD35AB76EF8}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RecurrentTasks.Tests", "test\RecurrentTasks.Tests\RecurrentTasks.Tests.xproj", "{650A5A85-5956-491E-9312-5E25A27D1108}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0B62072E-451A-46B0-B0BA-3FB2CB25501A} = {79344640-D2E5-4A31-880B-C6A9B0CC5F78}
-		{650A5A85-5956-491E-9312-5E25A27D1108} = {79344640-D2E5-4A31-880B-C6A9B0CC5F78}
+		{650A5A85-5956-491E-9312-5E25A27D1108} = {69202143-C3E5-48BB-BAD5-9FD35AB76EF8}
 	EndGlobalSection
 EndGlobal

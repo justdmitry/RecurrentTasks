@@ -4543,7 +4543,7 @@
   "libraries": {
     "RecurrentTasks/1.0.0": {
       "type": "project",
-      "path": "../RecurrentTasks/project.json"
+      "path": "../../src/RecurrentTasks/project.json"
     },
     "Microsoft.Dnx.Compilation.Abstractions/1.0.0-rc1-final": {
       "type": "package",
