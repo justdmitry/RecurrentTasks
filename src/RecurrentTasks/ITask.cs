@@ -27,7 +27,7 @@
         /// <summary>
         /// Information about task result (last run time, last exception, etc)
         /// </summary>
-        TaskStatus Status { get; }
+        TaskRunStatus RunStatus { get; }
 
         /// <summary>
         /// Interval between runs

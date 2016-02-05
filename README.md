@@ -11,10 +11,10 @@ Written for **ASP.NET vNext** (ASP.NET 5, ASP.NET Core 1).
 ## Main features
 
 * Start and Stop you task at any time;
-* First run (after Start) is delayed at random value (10-30 sec, customizable) to prevent app delay during statup;
+* First run (after Start) is delayed at random value (10-30 sec, customizable) to prevent app freeze during statup;
 * Run "immediately" (without waiting for next scheduled time);
 * Change run interval while running;
-* Task `Status` property (extendable) contains:
+* `RunStatus` property (extendable) contains:
  * last/next run times;
  * last run result (success / exception);
  * last success run time;
@@ -25,7 +25,7 @@ Written for **ASP.NET vNext** (ASP.NET 5, ASP.NET Core 1).
 
 ### 1. Create new task class
 
-    public class MyFirstTask : TaskBase<TaskStatus>
+    public class MyFirstTask : TaskBase<TaskRunStatus>
     {
       public MyFirstTask(ILoggerFactory loggerFactory, IServiceScopeFactory serviceScopeFactory)
           : base(loggerFactory, TimeSpan.FromMinutes(5), serviceScopeFactory)
@@ -33,7 +33,7 @@ Written for **ASP.NET vNext** (ASP.NET 5, ASP.NET Core 1).
           // Nothing
       }
     
-      protected override void Run(IServiceProvider serviceProvider, TaskStatus state)
+      protected override void Run(IServiceProvider serviceProvider, TaskRunStatus runStatus)
       {
         // Place your code here
       }
@@ -61,3 +61,16 @@ And viola! Your task will run every 5 minutes (second param when calling :base c
 ## Installation
 
 Use NuGet package [RecurrentTasks](https://www.nuget.org/packages/RecurrentTasks/)
+
+### Dependencies
+
+* Microsoft.Extensions.Logging.Abstractions
+* Microsoft.Extensions.DependencyInjection.Abstractions
+
+## Version history
+
+* 2.0.0 (Feb 5, 2016)
+  * Class/method/property names changed. Incompatible update - major version bump.
+  * New overridable methods `OnBeforeRun`, `OnAfterRunSuccess`, `OnAfterRunFail`
+* 1.0.0 (Feb 4, 2016)
+  * Initial release - our internal classes goes opensource

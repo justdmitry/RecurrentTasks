@@ -6,14 +6,14 @@
         <dt>IsStarted</dt>
         <dd>@myTask.IsStarted</dd>
 
-        <dt>Status.LastRunResult</dt>
-        <dd>@myTask.Status.LastRunResult</dd>
+        <dt>RunStatus.LastResult</dt>
+        <dd>@myTask.RunStatus.LastResult</dd>
 
-        <dt>Status.LastRunTime</dt>
-        <dd>@myTask.Status.LastRunTime</dd>
+        <dt>RunStatus.LastRunTime</dt>
+        <dd>@myTask.RunStatus.LastRunTime</dd>
 
-        <dt>Status.NextRunTime</dt>
-        <dd>@myTask.Status.NextRunTime (in @(myTask.Status.NextRunTime.Subtract(DateTime.Now)))</dd>
+        <dt>RunStatus.NextRunTime</dt>
+        <dd>@myTask.RunStatus.NextRunTime (in @(myTask.RunStatus.NextRunTime.Subtract(DateTime.Now)))</dd>
     </dl>
 
     <form method="post">

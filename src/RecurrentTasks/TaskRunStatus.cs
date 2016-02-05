@@ -2,15 +2,15 @@
 {
     using System;
 
-    public class TaskStatus
+    public class TaskRunStatus
     {
-        public TaskRunResult LastRunResult { get; set; }
+        public TaskRunResult LastResult { get; set; }
 
         public DateTimeOffset LastRunTime { get; set; }
 
         public DateTimeOffset LastSuccessTime { get; set; }
 
-        public DateTimeOffset FirstFail { get; set; }
+        public DateTimeOffset FirstFailTime { get; set; }
 
         public int FailsCount { get; set; }
 

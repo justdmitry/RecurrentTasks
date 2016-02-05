@@ -7,7 +7,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.DependencyInjection;
 
-    public abstract class TaskBase<TState> : ITask where TState : TaskStatus, new()
+    public abstract class TaskBase<TRunStatus> : ITask where TRunStatus : TaskRunStatus, new()
     {
         private static readonly Random Random = new Random();
 
@@ -25,12 +25,12 @@
             Logger = loggerFactory.CreateLogger(this.GetType().FullName);
             Interval = interval;
             ServiceScopeFactory = serviceScopeFactory;
-            Status = new TState();
+            RunStatus = new TRunStatus();
         }
 
-        TaskStatus ITask.Status { get { return Status; } }
+        TaskRunStatus ITask.RunStatus { get { return RunStatus; } }
 
-        public TState Status { get; private set; }
+        public TRunStatus RunStatus { get; protected set; }
 
         public bool IsStarted
         {
@@ -96,11 +96,11 @@
             while (true)
             {
                 Logger.LogDebug("Sleeping for {0}...", sleepInterval);
-                Status.NextRunTime = DateTimeOffset.Now.Add(sleepInterval);
+                RunStatus.NextRunTime = DateTimeOffset.Now.Add(sleepInterval);
                 var signaled = WaitHandle.WaitAny(events, sleepInterval);
-                if (signaled == 0) // индекс сработавшего. нулевой это breakEvent
+                if (signaled == 0) // index of signalled. zero is for 'breakEvent'
                 {
-                    // значит закругляемся
+                    // must stop and quit
                     Logger.LogWarning("BreakEvent is set, stopping...");
                     mainTask = null;
                     break;
@@ -122,29 +122,38 @@
 
                     try
                     {
+                        OnBeforeRun();
+
                         IsRunningRightNow = true;
 
-                        Status.LastRunTime = DateTimeOffset.Now;
+                        RunStatus.LastRunTime = DateTimeOffset.Now;
 
                         Logger.LogInformation("Calling Run()...");
-                        Run(scope.ServiceProvider, Status);
+                        Run(scope.ServiceProvider, RunStatus);
                         Logger.LogInformation("Done.");
 
-                        Status.LastRunResult = TaskRunResult.Success;
-                        Status.LastSuccessTime = DateTimeOffset.Now;
-                        Status.FirstFail = DateTimeOffset.MinValue;
-                        Status.FailsCount = 0;
+                        RunStatus.LastResult = TaskRunResult.Success;
+                        RunStatus.LastSuccessTime = DateTimeOffset.Now;
+                        RunStatus.FirstFailTime = DateTimeOffset.MinValue;
+                        RunStatus.FailsCount = 0;
+                        RunStatus.LastException = null;
+                        IsRunningRightNow = false;
+
+                        OnAfterRunSuccess();
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning("Ooops, error (ignoring):", ex);
-                        Status.LastRunResult = TaskRunResult.Fail;
-                        Status.LastException = ex;
-                        if (Status.FailsCount == 0)
+                        Logger.LogWarning("Ooops, error (ignoring, see RunStatus.LastException):", ex);
+                        RunStatus.LastResult = TaskRunResult.Fail;
+                        RunStatus.LastException = ex;
+                        if (RunStatus.FailsCount == 0)
                         {
-                            Status.FirstFail = DateTimeOffset.Now;
+                            RunStatus.FirstFailTime = DateTimeOffset.Now;
                         }
-                        Status.FailsCount++;
+                        RunStatus.FailsCount++;
+                        IsRunningRightNow = false;
+
+                        OnAfterRunFail();
                     }
                     finally
                     {
@@ -156,6 +165,30 @@
             Logger.LogInformation("MainLoop() finished.");
         }
 
-        protected abstract void Run(IServiceProvider serviceProvider, TState state);
+        protected abstract void Run(IServiceProvider serviceProvider, TRunStatus runStatus);
+
+        /// <summary>
+        /// Called before Run() is called (even before IsRunningRightNow set to true)
+        /// </summary>
+        protected virtual void OnBeforeRun()
+        {
+            // nothing
+        }
+
+        /// <summary>
+        /// Called after Run() sucessfully finished (after IsRunningRightNow set to false)
+        /// </summary>
+        protected virtual void OnAfterRunSuccess()
+        {
+            // nothing
+        }
+
+        /// <summary>
+        /// Called after Run() falied (after IsRunningRightNow set to false)
+        /// </summary>
+        protected virtual void OnAfterRunFail()
+        {
+            // nothing
+        }
     }
 }

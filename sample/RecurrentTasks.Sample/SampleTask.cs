@@ -5,7 +5,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
-    public class SampleTask : TaskBase<TaskStatus>
+    public class SampleTask : TaskBase<TaskRunStatus>
     {
         public List<string> Messages { get; } = new List<string>();
 
@@ -15,7 +15,7 @@
             // Nothing
         }
 
-        protected override void Run(IServiceProvider serviceProvider, TaskStatus state)
+        protected override void Run(IServiceProvider serviceProvider, TaskRunStatus runStatus)
         {
             Messages.Add(string.Format("Run at: {0}", DateTimeOffset.Now));
         }

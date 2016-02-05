@@ -1,11 +1,12 @@
 {
-  "version": "1.0.0",
+  "version": "2.0.0",
   "title": "RecurrentTasks",
   "description": "RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...",
   "authors": [ "Dmitry Popov" ],
   "tags": [ "task", "job", "recurrent", "recurring", "aspnetcore" ],
   "projectUrl": "https://github.com/justdmitry/RecurrentTasks",
   "copyright": "Dmitry Popov, 2016",
+  "releaseNotes": "Renames in classes/methods/properties, OnBefore/OnAfterRun overridable methods",
   "licenseUrl": "https://github.com/justdmitry/RecurrentTasks/blob/master/LICENSE",
   "repository": {
     "type": "git",

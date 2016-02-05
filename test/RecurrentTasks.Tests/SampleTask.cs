@@ -5,7 +5,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.DependencyInjection;
     
-    public class SampleTask : TaskBase<TaskStatus>
+    public class SampleTask : TaskBase<TaskRunStatus>
     {
         public readonly ManualResetEventSlim TaskRunCalled = new ManualResetEventSlim(false);
 
@@ -19,7 +19,7 @@
             // Nothing
         }
 
-        protected override void Run(IServiceProvider serviceProvider, TaskStatus state)
+        protected override void Run(IServiceProvider serviceProvider, TaskRunStatus runStatus)
         {
             TaskRunCalled.Set();
             if (MustThrowError)
