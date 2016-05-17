@@ -1,34 +1,62 @@
 ﻿{
   "version": "1.0.0-*",
-  "compilationOptions": {
-    "emitEntryPoint": true
-  },
 
   "dependencies": {
-    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
-    "RecurrentTasks": ""
+    "Microsoft.NETCore.App": {
+      "version": "1.0.0-rc2-3002702",
+      "type": "platform"
+    },
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-final",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-final",
+    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-final",
+    "Microsoft.AspNetCore.Razor.Tools": {
+      "version": "1.0.0-preview1-final",
+      "type": "build"
+    },
+    "Microsoft.Extensions.Configuration": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Logging": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Logging.Console": "1.0.0-rc2-final",
+    "RecurrentTasks": "*"
   },
 
-  "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel"
+  "tools": {
+    "Microsoft.AspNetCore.Razor.Tools": {
+      "version": "1.0.0-preview1-final",
+      "imports": "portable-net45+win8+dnxcore50"
+    },
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
+      "version": "1.0.0-preview1-final",
+      "imports": "portable-net45+win8+dnxcore50"
+    }
   },
 
   "frameworks": {
-    "dnx451": { },
-    "dnxcore50": { }
+    "netcoreapp1.0": {
+      "imports": [
+        "dotnet5.6",
+        "dnxcore50",
+        "portable-net45+win8"
+      ]
+    }
+  },
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "preserveCompilationContext": true
   },
 
-  "exclude": [
-    "wwwroot"
-  ],
+  "runtimeOptions": {
+    "gcServer": true
+  },
 
-  "publishExclude": [
-    "**.user",
-    "**.vspscc"
-  ]
+  "publishOptions": {
+    "include": [
+      "wwwroot",
+      "Views",
+      "web.config"
+    ]
+  },
+
+  "scripts": {
+    "postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
+  }
 }

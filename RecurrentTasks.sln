@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{79344640-D2E5-4A31-880B-C6A9B0CC5F78}"
 EndProject
@@ -39,6 +39,7 @@ Global
 		{00D3BBCA-6803-4BBC-BF81-41F8EAED2EE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00D3BBCA-6803-4BBC-BF81-41F8EAED2EE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00D3BBCA-6803-4BBC-BF81-41F8EAED2EE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00D3BBCA-6803-4BBC-BF81-41F8EAED2EE9}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

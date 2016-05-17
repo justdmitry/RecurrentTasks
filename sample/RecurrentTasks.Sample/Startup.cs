@@ -1,13 +1,26 @@
 ﻿namespace RecurrentTasks.Sample
 {
     using System;
-    using Microsoft.AspNet.Builder;
-    using Microsoft.AspNet.Hosting;
+    using System.IO;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
     public class Startup
     {
+        public static void Main(string[] args)
+        {
+            var host = new WebHostBuilder()
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
+                .UseStartup<Startup>()
+                .Build();
+
+            host.Run();
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<SampleTask>();
@@ -17,16 +30,11 @@
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            loggerFactory.MinimumLevel = LogLevel.Debug;
             loggerFactory.AddConsole(LogLevel.Debug);
-
-            app.UseIISPlatformHandler();
 
             app.UseMvcWithDefaultRoute();
 
             app.ApplicationServices.GetRequiredService<SampleTask>().Start();
         }
-
-        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
 }

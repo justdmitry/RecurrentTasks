@@ -1,24 +1,25 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "title": "RecurrentTasks",
-  "description": "RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...",
-  "authors": [ "Dmitry Popov" ],
-  "tags": [ "task", "job", "recurrent", "recurring", "aspnetcore" ],
-  "projectUrl": "https://github.com/justdmitry/RecurrentTasks",
   "copyright": "Dmitry Popov, 2016",
-  "releaseNotes": "Renames in classes/methods/properties, OnBefore/OnAfterRun overridable methods",
-  "licenseUrl": "https://github.com/justdmitry/RecurrentTasks/blob/master/LICENSE",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/justdmitry/RecurrentTasks.git"
+  "packOptions": {
+    "summary": "RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...",
+    "tags": [ "task", "job", "recurrent", "recurring", "aspnetcore" ],
+    "owners": [ "Dmitry Popov" ],
+    "releaseNotes": "Upgrade to RC2 and netstandard",
+    "licenseUrl": "https://github.com/justdmitry/RecurrentTasks/blob/master/LICENSE",
+    "projectUrl": "https://github.com/justdmitry/RecurrentTasks",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/justdmitry/RecurrentTasks.git"
+    }
   },
   "dependencies": {
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final"
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-final",
+    "System.Threading": "4.0.11-rc2-24027"
   },
   "frameworks": {
-    "net451": { },
-    "netcore50": { },
-    "dotnet5.4": { }
+    "netstandard1.3": { }
   }
 }

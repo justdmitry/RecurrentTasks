@@ -1,3 +1,5 @@
 /.vs
 /artifacts
 *.user
+bin
+obj
