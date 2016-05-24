@@ -72,6 +72,8 @@ Target [framework/platform moniker](https://github.com/dotnet/corefx/blob/master
 
 ## Version history
 
+* 2.2.0 (May 24, 2016)
+  * New `AfterRunFail` event with `Exception` info
 * 2.1.0 (May 17, 2016)
   * Target framework changed to `netstandard1.3` (`System.Threading` v4.0.11 is new dependency)
   * Other dependencies upgraded to RC2
