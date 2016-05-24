@@ -28,6 +28,8 @@
             RunStatus = new TRunStatus();
         }
 
+        public event EventHandler<ExceptionEventArgs> AfterRunFail;
+
         TaskRunStatus ITask.RunStatus { get { return RunStatus; } }
 
         public TRunStatus RunStatus { get; protected set; }
@@ -138,7 +140,7 @@
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning("Ooops, error (ignoring, see RunStatus.LastException):", ex);
+                        Logger.LogWarning(0, ex, "Ooops, error (ignoring, see RunStatus.LastException or handle AfterRunFail event)");
                         RunStatus.LastResult = TaskRunResult.Fail;
                         RunStatus.LastException = ex;
                         if (RunStatus.FailsCount == 0)
@@ -149,6 +151,15 @@
                         IsRunningRightNow = false;
 
                         OnAfterRunFail();
+
+                        try
+                        {
+                            AfterRunFail?.Invoke(this, new ExceptionEventArgs(ex));
+                        }
+                        catch (Exception ex2)
+                        {
+                            Logger.LogError(0, ex2, "Error while processing AfterRunFail event (ignored)");
+                        }
                     }
                     finally
                     {

@@ -175,5 +175,26 @@
             // should run again - waiting twice default interval
             Assert.True(sampleTask.TaskRunCalled.Wait(TimeSpan.FromSeconds(10)));
         }
+
+        [Fact]
+        public void Task_AfterRunFailGeneratedAfterException()
+        {
+            var eventGenerated = false;
+
+            sampleTask.MustThrowError = true;
+            sampleTask.AfterRunFail += (object sender, ExceptionEventArgs e) =>
+            {
+                eventGenerated = true;
+            }; 
+
+            sampleTask.Start(TimeSpan.FromSeconds(2));
+
+            // waiting 5 seconds max, then failing
+            Assert.True(sampleTask.TaskRunCalled.Wait(TimeSpan.FromSeconds(5)));
+
+            System.Threading.Thread.Sleep(200); // wait for run cycle completed
+
+            Assert.True(eventGenerated);
+        }
     }
 }
