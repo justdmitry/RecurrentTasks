@@ -6,55 +6,60 @@ Each task is a separate `Task`, which sleeps in background for a while, wakes up
 
 Ideal, when you don't need to run many/heavy tasks and don't want to use "big" solutions with persistence and other bells and whistles.
 
-Written for **ASP.NET vNext** (ASP.NET 5, ASP.NET Core 1).
+Written for **ASP.NET Core** (ASP.NET 5, ASP.NET vNext).
 
 ## Main features
 
-* Start and Stop you task at any time;
+* Start and Stop your task at any time;
 * First run (after Start) is delayed at random value (10-30 sec, customizable) to prevent app freeze during statup;
 * Run "immediately" (without waiting for next scheduled time);
 * Change run interval while running;
 * `RunStatus` property (extendable) contains:
- * last/next run times;
- * last run result (success / exception);
- * last success run time;
- * last exception;
- * total failed runs counter.
+    * last/next run times;
+    * last run result (success / exception);
+    * last success run time;
+    * last exception;
+    * total failed runs counter.
 
 ## Usage
 
 ### 1. Create new task class
 
-    public class MyFirstTask : TaskBase<TaskRunStatus>
+```csharp
+public class MyFirstTask : TaskBase<TaskRunStatus>
+{
+    public MyFirstTask(ILoggerFactory loggerFactory, IServiceScopeFactory serviceScopeFactory)
+        : base(loggerFactory, TimeSpan.FromMinutes(5), serviceScopeFactory)
     {
-      public MyFirstTask(ILoggerFactory loggerFactory, IServiceScopeFactory serviceScopeFactory)
-          : base(loggerFactory, TimeSpan.FromMinutes(5), serviceScopeFactory)
-      {
-          // Nothing
-      }
-    
-      protected override void Run(IServiceProvider serviceProvider, TaskRunStatus runStatus)
-      {
-        // Place your code here
-      }
+        // Nothing
     }
+    
+    protected override void Run(IServiceProvider serviceProvider, TaskRunStatus runStatus)
+    {
+        // Place your code here
+    }
+}
+```
 
 ### 2. Register and start your task in `Startup.cs`
 
-    public void ConfigureServices(IServiceCollection services)
-    {
-      ...
-      services.AddSingleton<MyFirstTask>();
-      ...
-    }
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    ...
+    services.AddSingleton<MyFirstTask>();
+    ...
+}
     
-    public void Configure(IApplicationBuilder app, ...)
-    {
-      ...
-      app.ApplicationServices.GetRequiredService<MyFirstTask>().Start();
-      ...
-    }
-  
+public void Configure(IApplicationBuilder app, ...)
+{
+    ...
+    app.ApplicationServices.GetRequiredService<MyFirstTask>().Start();
+    ...
+}
+```
+
 And viola! Your task will run every 5 minutes (second param when calling :base constructor). Until you application alive, of course.
 
 
@@ -72,6 +77,8 @@ Target [framework/platform moniker](https://github.com/dotnet/corefx/blob/master
 
 ## Version history
 
+* 2.3.0 (June 28, 2016)
+  * Dependencies upgraded to 1.0.0 RTM
 * 2.2.0 (May 24, 2016)
   * New `AfterRunFail` event with `Exception` info
 * 2.1.0 (May 17, 2016)
