@@ -38,6 +38,11 @@
         TimeSpan Interval { get; set; }
 
         /// <summary>
+        /// Raises when exception catched during task run.
+        /// </summary>
+        event EventHandler<ExceptionEventArgs> AfterRunFail;
+
+        /// <summary>
         /// Start task (first run is delayed for 10-30 sec)
         /// </summary>
         /// <exception cref="InvalidOperationException">Task is already started</exception>
