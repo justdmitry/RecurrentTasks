@@ -76,18 +76,3 @@ Target [framework/platform moniker](https://github.com/dotnet/corefx/blob/master
 * Microsoft.Extensions.Logging.Abstractions
 * Microsoft.Extensions.DependencyInjection.Abstractions
 * System.Threading
-
-## Version history
-
-* 2.3.0 (June 28, 2016)
-  * Dependencies upgraded to 1.0.0 RTM
-* 2.2.0 (May 24, 2016)
-  * New `AfterRunFail` event with `Exception` info
-* 2.1.0 (May 17, 2016)
-  * Target framework changed to `netstandard1.3` (`System.Threading` v4.0.11 is new dependency)
-  * Other dependencies upgraded to RC2
-* 2.0.0 (Feb 5, 2016)
-  * Class/method/property names changed. Incompatible update - major version bump.
-  * New overridable methods `OnBeforeRun`, `OnAfterRunSuccess`, `OnAfterRunFail`
-* 1.0.0 (Feb 4, 2016)
-  * Initial release - our internal classes goes opensource
