@@ -1,12 +1,12 @@
 {
-  "version": "2.4.0",
+  "version": "2.4.1",
   "title": "RecurrentTasks",
   "copyright": "Dmitry Popov, 2016",
   "packOptions": {
     "summary": "RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...",
     "tags": [ "task", "job", "recurrent", "recurring", "aspnetcore" ],
     "owners": [ "Dmitry Popov" ],
-    "releaseNotes": "AfterRunFail event added to ITask",
+    "releaseNotes": "Added back net45 and net461 target frameworks",
     "licenseUrl": "https://github.com/justdmitry/RecurrentTasks/blob/master/LICENSE",
     "projectUrl": "https://github.com/justdmitry/RecurrentTasks",
     "repository": {
@@ -16,10 +16,23 @@
   },
   "dependencies": {
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-    "System.Threading": "4.0.11"
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0"
   },
   "frameworks": {
-    "netstandard1.3": {}
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Runtime": "4.0.10.0"
+      }
+    },
+    "net46": {
+      "frameworkAssemblies": {
+        "System.Runtime": "4.0.20.0"
+      }
+    },
+    "netstandard1.3": {
+      "dependencies": {
+        "System.Threading": "4.0.11"
+      }
+    }
   }
 }

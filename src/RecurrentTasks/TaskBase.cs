@@ -113,8 +113,13 @@
                     if (RunningCulture != null)
                     {
                         Logger.LogDebug("Switching to {0} CultureInfo...", RunningCulture.Name);
+#if NET451
+                        Thread.CurrentThread.CurrentCulture = RunningCulture;
+                        Thread.CurrentThread.CurrentUICulture = RunningCulture;
+#else
                         CultureInfo.CurrentCulture = RunningCulture;
                         CultureInfo.CurrentUICulture = RunningCulture;
+#endif
                     }
 
                     try

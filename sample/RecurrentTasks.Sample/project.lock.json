@@ -3615,7 +3615,7 @@
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
         }
       },
-      "RecurrentTasks/2.3.0": {
+      "RecurrentTasks/2.4.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.3",
         "dependencies": {
@@ -9599,7 +9599,7 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "RecurrentTasks/2.3.0": {
+    "RecurrentTasks/2.4.0": {
       "type": "project",
       "path": "../../src/RecurrentTasks/project.json",
       "msbuildProject": "../../src/RecurrentTasks/RecurrentTasks.xproj"
