@@ -5,9 +5,9 @@
 
     public class HomeController : Controller
     {
-        private SampleTask myTask;
+        private ITask myTask;
 
-        public HomeController(SampleTask myTask)
+        public HomeController(ITask<SampleTask> myTask)
         {
             this.myTask = myTask;
         }
@@ -33,7 +33,7 @@
                 case "START":
                     if (!myTask.IsStarted)
                     {
-                        myTask.Start();
+                        myTask.Start(TimeSpan.Zero);
                     }
                     break;
                 case "TRYRUN":

@@ -1,4 +1,7 @@
-﻿@inject RecurrentTasks.Sample.SampleTask myTask
+﻿@using RecurrentTasks;
+@using RecurrentTasks.Sample;
+@inject ITask<SampleTask> myTask
+@inject SampleTaskRunHistory runHistory
 <html>
 <body>
     <h1>RecurrentTasks Sample</h1>
@@ -30,7 +33,7 @@
     <p>
         Task messages:
         <ul>
-            @foreach(var msg in myTask.Messages)
+            @foreach(var msg in runHistory.Messages)
             {
                 <li>@msg</li>
             }

@@ -23,7 +23,11 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<SampleTask>();
+            services.AddTask<SampleTask>();
+
+            // We want some data to persist across task runs
+            // SampleTask expect this instance in .ctor(), we need to register it in DI
+            services.AddSingleton<SampleTaskRunHistory>();
 
             services.AddMvc();
         }
@@ -34,7 +38,7 @@
 
             app.UseMvcWithDefaultRoute();
 
-            app.ApplicationServices.GetRequiredService<SampleTask>().Start();
+            app.StartTask<SampleTask>(TimeSpan.FromSeconds(15));
         }
     }
 }

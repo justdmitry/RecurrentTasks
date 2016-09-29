@@ -43,16 +43,10 @@
         event EventHandler<ExceptionEventArgs> AfterRunFail;
 
         /// <summary>
-        /// Start task (first run is delayed for 10-30 sec)
-        /// </summary>
-        /// <exception cref="InvalidOperationException">Task is already started</exception>
-        void Start();
-
-        /// <summary>
         /// Start task (and delay first run for specified interval)
         /// </summary>
         /// <exception cref="InvalidOperationException">Task is already started</exception>
-        void Start(TimeSpan initialTimeout);
+        void Start(TimeSpan firstRunDelay);
 
         /// <summary>
         /// Stop task (will NOT break if currently running)

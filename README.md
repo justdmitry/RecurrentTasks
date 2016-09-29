@@ -16,7 +16,7 @@ Written for **ASP.NET Core** (ASP.NET 5, ASP.NET vNext).
 * First run (after Start) is delayed at random value (10-30 sec, customizable) to prevent app freeze during statup;
 * Run "immediately" (without waiting for next scheduled time);
 * Change run interval while running;
-* `RunStatus` property (extendable) contains:
+* `RunStatus` property contains:
     * last/next run times;
     * last run result (success / exception);
     * last success run time;
@@ -28,15 +28,16 @@ Written for **ASP.NET Core** (ASP.NET 5, ASP.NET vNext).
 ### 1. Create new task class
 
 ```csharp
-public class MyFirstTask : TaskBase<TaskRunStatus>
+public class MyFirstTask : IRunnable
 {
-    public MyFirstTask(ILoggerFactory loggerFactory, IServiceScopeFactory serviceScopeFactory)
-        : base(loggerFactory, TimeSpan.FromMinutes(5), serviceScopeFactory)
+    private ILogger logger;
+
+    public MyFirstTask(ILogger<MyFirstTask> logger)
     {
-        // Nothing
+        this.logger = logger;
     }
     
-    protected override void Run(IServiceProvider serviceProvider, TaskRunStatus runStatus)
+    public void Run()
     {
         // Place your code here
     }
@@ -50,20 +51,21 @@ public class MyFirstTask : TaskBase<TaskRunStatus>
 public void ConfigureServices(IServiceCollection services)
 {
     ...
-    services.AddSingleton<MyFirstTask>();
+    services.AddTask<MyFirstTask>();
     ...
 }
     
 public void Configure(IApplicationBuilder app, ...)
 {
     ...
-    app.ApplicationServices.GetRequiredService<MyFirstTask>().Start();
+    app.StartTask<MyFirstTask>(TimeSpan.FromMinutes(5));
     ...
 }
 ```
 
-And viola! Your task will run every 5 minutes (second param when calling :base constructor). Until you application alive, of course.
+And viola! Your task will run every 5 minutes. Until you application alive, of course.
 
+You can add any parameters to constructor, while they are resolvable from DI container.
 
 ## Installation
 
@@ -73,6 +75,7 @@ Target [framework/platform moniker](https://github.com/dotnet/corefx/blob/master
 
 ### Dependencies
 
+* Microsoft.AspNetCore.Http.Abstractions
 * Microsoft.Extensions.Logging.Abstractions
 * Microsoft.Extensions.DependencyInjection.Abstractions
 * System.Threading

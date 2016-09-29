@@ -2,31 +2,24 @@
 {
     using System;
     using System.Threading;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.DependencyInjection;
     
-    public class SampleTask : TaskBase<TaskRunStatus>
+    public class SampleTask : IRunnable
     {
-        public readonly ManualResetEventSlim TaskRunCalled = new ManualResetEventSlim(false);
+        private SampleTaskSettings settings;
 
-        public bool MustThrowError { get; set; } = false;
-
-        public ManualResetEventSlim CanContinueRun = new ManualResetEventSlim(true);
-
-        public SampleTask(ILoggerFactory loggerFactory, TimeSpan interval, IServiceScopeFactory serviceScopeFactory)
-            : base(loggerFactory, interval, serviceScopeFactory)
+        public SampleTask(SampleTaskSettings settings)
         {
-            // Nothing
+            this.settings = settings;
         }
 
-        protected override void Run(IServiceProvider serviceProvider, TaskRunStatus runStatus)
+        public void Run(TaskRunStatus taskRunStatus)
         {
-            TaskRunCalled.Set();
-            if (MustThrowError)
+            settings.TaskRunCalled.Set();
+            if (settings.MustThrowError)
             {
                 throw new Exception("You asked - I throw");
             }
-            if (!CanContinueRun.Wait(TimeSpan.FromSeconds(10)))
+            if (!settings.CanContinueRun.Wait(TimeSpan.FromSeconds(10)))
             {
                 throw new Exception("CanContinueRun not set during 10 seconds. Something wrong with test...");
             }

@@ -1,23 +1,25 @@
 ﻿namespace RecurrentTasks.Sample
 {
     using System;
-    using System.Collections.Generic;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
-    public class SampleTask : TaskBase<TaskRunStatus>
+    public class SampleTask : IRunnable
     {
-        public List<string> Messages { get; } = new List<string>();
+        private ILogger logger;
 
-        public SampleTask(ILoggerFactory loggerFactory, IServiceScopeFactory serviceScopeFactory)
-            : base(loggerFactory, TimeSpan.FromMinutes(1), serviceScopeFactory)
+        private SampleTaskRunHistory runHistory;
+
+        public SampleTask(ILogger<SampleTask> logger, SampleTaskRunHistory runHistory)
         {
-            // Nothing
+            this.logger = logger;
+            this.runHistory = runHistory;
         }
 
-        protected override void Run(IServiceProvider serviceProvider, TaskRunStatus runStatus)
+        public void Run(TaskRunStatus taskRunStatus)
         {
-            Messages.Add(string.Format("Run at: {0}", DateTimeOffset.Now));
+            var msg = string.Format("Run at: {0}", DateTimeOffset.Now);
+            runHistory.Messages.Add(msg);
+            logger.LogDebug(msg);
         }
     }
 }
