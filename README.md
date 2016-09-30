@@ -37,7 +37,7 @@ public class MyFirstTask : IRunnable
         this.logger = logger;
     }
     
-    public void Run()
+    public void Run(TaskRunStatus taskRunStatus)
     {
         // Place your code here
     }
