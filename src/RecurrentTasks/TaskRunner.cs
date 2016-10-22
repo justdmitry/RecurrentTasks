@@ -131,7 +131,7 @@
                         var runnable = (TRunnable) scope.ServiceProvider.GetRequiredService(typeof(TRunnable));
 
                         logger.LogInformation("Calling Run()...");
-                        runnable.Run(RunStatus);
+                        runnable.Run(this);
                         logger.LogInformation("Done.");
 
                         RunStatus.LastRunTime = startTime;

@@ -2662,7 +2662,7 @@
           "lib/netstandard1.1/xunit.runner.utility.dotnet.dll": {}
         }
       },
-      "RecurrentTasks/3.0.0": {
+      "RecurrentTasks/3.0.0-beta1": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.3",
         "dependencies": {
@@ -3348,7 +3348,7 @@
           "lib/net45/xunit.runner.utility.desktop.dll": {}
         }
       },
-      "RecurrentTasks/3.0.0": {
+      "RecurrentTasks/3.0.0-beta1": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.5.1",
         "dependencies": {
@@ -4036,7 +4036,7 @@
           "lib/net45/xunit.runner.utility.desktop.dll": {}
         }
       },
-      "RecurrentTasks/3.0.0": {
+      "RecurrentTasks/3.0.0-beta1": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
@@ -9190,7 +9190,7 @@
         "xunit.runner.utility.nuspec"
       ]
     },
-    "RecurrentTasks/3.0.0": {
+    "RecurrentTasks/3.0.0-beta1": {
       "type": "project",
       "path": "../../src/RecurrentTasks/project.json",
       "msbuildProject": "../../src/RecurrentTasks/RecurrentTasks.xproj"

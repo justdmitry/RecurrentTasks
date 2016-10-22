@@ -1,7 +1,6 @@
 ﻿namespace RecurrentTasks
 {
     using System;
-    using System.Threading;
     
     public class SampleTask : IRunnable
     {
@@ -12,7 +11,7 @@
             this.settings = settings;
         }
 
-        public void Run(TaskRunStatus taskRunStatus)
+        public void Run(ITask currentTask)
         {
             settings.TaskRunCalled.Set();
             if (settings.MustThrowError)
