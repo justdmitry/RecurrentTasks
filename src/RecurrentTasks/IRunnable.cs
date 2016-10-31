@@ -2,6 +2,6 @@
 {
     public interface IRunnable
     {
-        void Run(TaskRunStatus taskRunStatus);
+        void Run(ITask currentTask);
     }
 }

@@ -15,11 +15,14 @@
             this.runHistory = runHistory;
         }
 
-        public void Run(TaskRunStatus taskRunStatus)
+        public void Run(ITask currentTask)
         {
             var msg = string.Format("Run at: {0}", DateTimeOffset.Now);
             runHistory.Messages.Add(msg);
             logger.LogDebug(msg);
+
+            // You can change interval for [all] next runs!
+            currentTask.Interval = currentTask.Interval.Add(TimeSpan.FromSeconds(1));
         }
     }
 }

@@ -4,7 +4,6 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.DependencyInjection;
     using Xunit;
-    using System.Threading;
 
     public class TaskRunnerTests : IDisposable
     {
@@ -199,7 +198,7 @@
             sampleTask.Start(TimeSpan.FromSeconds(1));
 
             // waiting 2 seconds max, then failing
-            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(3)));
 
             System.Threading.Thread.Sleep(200); // wait for run cycle completed
 

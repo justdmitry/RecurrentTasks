@@ -37,12 +37,14 @@ public class MyFirstTask : IRunnable
         this.logger = logger;
     }
     
-    public void Run()
+    public void Run(ITask currentTask)
     {
         // Place your code here
     }
 }
 ```
+
+You can add any parameters to constructor, while they are resolvable from DI container (including scope-lifetime services, because new scope is created for every task run).
 
 ### 2. Register and start your task in `Startup.cs`
 
@@ -64,8 +66,6 @@ public void Configure(IApplicationBuilder app, ...)
 ```
 
 And viola! Your task will run every 5 minutes. Until you application alive, of course.
-
-You can add any parameters to constructor, while they are resolvable from DI container.
 
 ## Installation
 

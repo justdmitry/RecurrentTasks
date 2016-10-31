@@ -9,13 +9,19 @@
         public static void StartTask<TRunnable>(this IApplicationBuilder app, TimeSpan interval)
             where TRunnable : IRunnable
         {
-            StartTask<TRunnable>(app, interval, TimeSpan.FromSeconds(new Random().Next(10, 30)));
+            StartTask<TRunnable>(app, t => { t.Interval = interval; });
         }
 
         public static void StartTask<TRunnable>(this IApplicationBuilder app, TimeSpan interval, TimeSpan initialTimeout)
             where TRunnable : IRunnable
         {
-            StartTask<TRunnable>(app, t => { t.Interval = interval; }, TimeSpan.FromSeconds(new Random().Next(10, 30)));
+            StartTask<TRunnable>(app, t => { t.Interval = interval; }, initialTimeout);
+        }
+
+        public static void StartTask<TRunnable>(this IApplicationBuilder app, Action<ITask> setupAction)
+            where TRunnable : IRunnable
+        {
+            StartTask<TRunnable>(app, setupAction, TimeSpan.FromSeconds(new Random().Next(10, 30)));
         }
 
         public static void StartTask<TRunnable>(this IApplicationBuilder app, Action<ITask> setupAction, TimeSpan initialTimeout)
