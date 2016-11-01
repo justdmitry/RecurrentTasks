@@ -2,9 +2,10 @@
 {
     using System;
 
-    public class ExceptionEventArgs : EventArgs
+    public class ExceptionEventArgs : ServiceProviderEventArgs
     {
-        public ExceptionEventArgs(Exception exception)
+        public ExceptionEventArgs(IServiceProvider serviceProvider, Exception exception)
+            :base(serviceProvider)
         {
             if (exception == null)
             {

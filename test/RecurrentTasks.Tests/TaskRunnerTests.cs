@@ -4,6 +4,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.DependencyInjection;
     using Xunit;
+    using System.Threading;
 
     public class TaskRunnerTests : IDisposable
     {
@@ -38,8 +39,7 @@
         [Fact]
         public void Task_CanStart()
         {
-            // must start after 1 seconds
-            sampleTask.Start(TimeSpan.FromSeconds(1));
+            sampleTask.Start(TimeSpan.Zero);
 
             // waiting 2 seconds max, then failing
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
@@ -48,8 +48,7 @@
         [Fact]
         public void Task_CanNotStartTwice()
         {
-            // must start after 1 seconds
-            sampleTask.Start(TimeSpan.FromSeconds(1));
+            sampleTask.Start(TimeSpan.Zero);
 
             // waiting 2 seconds max (then failing)
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
@@ -61,46 +60,40 @@
         [Fact]
         public void Task_RunAgainAndAgain()
         {
-            sampleTask.Interval = TimeSpan.FromSeconds(3);
+            sampleTask.Interval = TimeSpan.FromSeconds(2);
 
-            // must start after 1 seconds
-            sampleTask.Start(TimeSpan.FromSeconds(1));
+            sampleTask.Start(TimeSpan.Zero);
 
-            // waiting 2 seconds max, then failing
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
             // resetting event
             settings.TaskRunCalled.Reset();
 
             // waiting for next run - default interval and little more
-            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(3 + 1)));
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(3)));
         }
 
         [Fact]
         public void Task_CanStop()
         {
-            sampleTask.Interval = TimeSpan.FromSeconds(3);
+            sampleTask.Interval = TimeSpan.FromSeconds(2);
 
-            // must start after 1 seconds
-            sampleTask.Start(TimeSpan.FromSeconds(1));
+            sampleTask.Start(TimeSpan.Zero);
 
-            // waiting 2 seconds max, then failing
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
             settings.TaskRunCalled.Reset();
             sampleTask.Stop();
 
             // should NOT run again - waiting twice default interval and little more
-            Assert.False(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(3 * 2 + 1)));
+            Assert.False(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2 * 2 + 1)));
         }
 
         [Fact]
         public void Task_CanNotStopTwice()
         {
-            // must start after 1 seconds
-            sampleTask.Start(TimeSpan.FromSeconds(1));
+            sampleTask.Start(TimeSpan.Zero);
 
-            // waiting 2 seconds max, then failing
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
             sampleTask.Stop();
@@ -116,7 +109,7 @@
         {
             Assert.False(sampleTask.IsStarted);
 
-            sampleTask.Start(TimeSpan.FromSeconds(1));
+            sampleTask.Start(TimeSpan.Zero);
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
@@ -136,7 +129,7 @@
 
             settings.CanContinueRun.Reset(); // do not complete 'Run' without permission!
 
-            sampleTask.Start(TimeSpan.FromSeconds(1));
+            sampleTask.Start(TimeSpan.Zero);
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
             Assert.True(sampleTask.IsRunningRightNow, "Oops, IsRunningRightNow is not 'true'. Something is broken!!!");
@@ -153,10 +146,10 @@
         [Fact]
         public void Task_RunImmediately_Works()
         {
-            // must start after 1 seconds
-            sampleTask.Start(TimeSpan.FromSeconds(1));
+            sampleTask.Interval = TimeSpan.FromSeconds(5);
 
-            // waiting 2 seconds max, then failing
+            sampleTask.Start(TimeSpan.Zero);
+
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)), "Failed to start first time");
 
             settings.TaskRunCalled.Reset();
@@ -170,39 +163,68 @@
         [Fact]
         public void Task_RunningAgainAfterException()
         {
-            sampleTask.Interval = TimeSpan.FromSeconds(3);
+            sampleTask.Interval = TimeSpan.FromSeconds(2);
 
             settings.MustThrowError = true;
-            sampleTask.Start(TimeSpan.FromSeconds(1));
+            sampleTask.Start(TimeSpan.Zero);
 
-            // waiting 2 seconds max, then failing
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
             settings.TaskRunCalled.Reset();
 
             // should run again - waiting twice default interval and little more
-            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(3 * 2 + 1)));
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2 * 2 + 1)));
+        }
+
+        [Fact]
+        public void Task_BeforeRunGenerated()
+        {
+            var eventGenerated = new ManualResetEventSlim(false);
+
+            sampleTask.BeforeRun += (object sender, ServiceProviderEventArgs e) =>
+            {
+                eventGenerated.Set();
+            };
+
+            sampleTask.Start(TimeSpan.Zero);
+
+            // waiting a little, then failing
+            Assert.True(eventGenerated.Wait(TimeSpan.FromSeconds(2)));
+        }
+
+        [Fact]
+        public void Task_AfterRunSuccessGenerated()
+        {
+            var eventGenerated = new ManualResetEventSlim(false);
+
+            sampleTask.AfterRunSuccess += (object sender, ServiceProviderEventArgs e) =>
+            {
+                eventGenerated.Set();
+            };
+
+            sampleTask.Start(TimeSpan.Zero);
+
+            // waiting a little, then failing
+            Assert.True(eventGenerated.Wait(TimeSpan.FromSeconds(2)));
         }
 
         [Fact]
         public void Task_AfterRunFailGeneratedAfterException()
         {
-            var eventGenerated = false;
+            var eventGenerated = new ManualResetEventSlim(false);
 
             settings.MustThrowError = true;
             sampleTask.AfterRunFail += (object sender, ExceptionEventArgs e) =>
             {
-                eventGenerated = true;
-            }; 
+                eventGenerated.Set();
+            };
 
-            sampleTask.Start(TimeSpan.FromSeconds(1));
+            sampleTask.Start(TimeSpan.Zero);
 
             // waiting 2 seconds max, then failing
-            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(3)));
+            Assert.True(eventGenerated.Wait(TimeSpan.FromSeconds(2)));
 
             System.Threading.Thread.Sleep(200); // wait for run cycle completed
-
-            Assert.True(eventGenerated);
         }
     }
 }

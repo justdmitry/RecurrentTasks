@@ -28,12 +28,21 @@
             RunStatus = new TaskRunStatus();
         }
 
+        /// <inheritdoc />
+        public event EventHandler<ServiceProviderEventArgs> BeforeRun;
+
+        /// <inheritdoc />
         public event EventHandler<ExceptionEventArgs> AfterRunFail;
+
+        /// <inheritdoc />
+        public event EventHandler<ServiceProviderEventArgs> AfterRunSuccess;
 
         TaskRunStatus ITask.RunStatus { get { return RunStatus; } }
 
+        /// <inheritdoc />
         public TaskRunStatus RunStatus { get; protected set; }
 
+        /// <inheritdoc />
         public bool IsStarted
         {
             get
@@ -42,14 +51,18 @@
             }
         }
 
+        /// <inheritdoc />
         public bool IsRunningRightNow { get; private set; }
 
+        /// <inheritdoc />
         public CultureInfo RunningCulture { get; set; }
 
+        /// <inheritdoc />
         public TimeSpan Interval { get; set; }
 
         private IServiceScopeFactory ServiceScopeFactory { get; set; }
 
+        /// <inheritdoc />
         public void Start(TimeSpan firstRunDelay)
         {
             if (firstRunDelay < TimeSpan.Zero)
@@ -69,6 +82,7 @@
             mainTask = Task.Run(() => MainLoop(firstRunDelay));
         }
 
+        /// <inheritdoc />
         public void Stop()
         {
             logger.LogInformation("Stop() called...");
@@ -79,6 +93,7 @@
             breakEvent.Set();
         }
 
+        /// <inheritdoc />
         public void TryRunImmediately()
         {
             if (mainTask == null)
@@ -122,7 +137,7 @@
 
                     try
                     {
-                        OnBeforeRun();
+                        OnBeforeRun(scope.ServiceProvider);
 
                         IsRunningRightNow = true;
 
@@ -142,7 +157,7 @@
                         RunStatus.LastException = null;
                         IsRunningRightNow = false;
 
-                        OnAfterRunSuccess();
+                        OnAfterRunSuccess(scope.ServiceProvider);
                     }
                     catch (Exception ex)
                     {
@@ -156,16 +171,7 @@
                         RunStatus.FailsCount++;
                         IsRunningRightNow = false;
 
-                        OnAfterRunFail();
-
-                        try
-                        {
-                            AfterRunFail?.Invoke(this, new ExceptionEventArgs(ex));
-                        }
-                        catch (Exception ex2)
-                        {
-                            logger.LogError(0, ex2, "Error while processing AfterRunFail event (ignored)");
-                        }
+                        OnAfterRunFail(scope.ServiceProvider, ex);
                     }
                     finally
                     {
@@ -185,28 +191,48 @@
             logger.LogInformation("MainLoop() finished.");
         }
 
-        /// <summary>
-        /// Called before Run() is called (even before IsRunningRightNow set to true)
-        /// </summary>
-        protected virtual void OnBeforeRun()
+        /// <remarks>
+        /// Invokes <see cref="BeforeRun"/> event - don't forget to call base.OnBeforeRun in override
+        /// </remarks>
+        protected virtual void OnBeforeRun(IServiceProvider serviceProvider)
         {
-            // nothing
+            BeforeRun?.Invoke(this, new ServiceProviderEventArgs(serviceProvider));
         }
 
-        /// <summary>
-        /// Called after Run() sucessfully finished (after IsRunningRightNow set to false)
-        /// </summary>
-        protected virtual void OnAfterRunSuccess()
+        /// <remarks>
+        /// Invokes <see cref="AfterRunSuccess"/> event - don't forget to call base.OnAfterRunSuccess in override
+        /// </remarks>
+        /// <remarks>
+        /// Attention! Any exception, catched during AfterRunSuccess.Invoke, is written to error log and ignored.
+        /// </remarks>
+        protected virtual void OnAfterRunSuccess(IServiceProvider serviceProvider)
         {
-            // nothing
+            try
+            {
+                AfterRunSuccess?.Invoke(this, new ServiceProviderEventArgs(serviceProvider));
+            }
+            catch (Exception ex2)
+            {
+                logger.LogError(0, ex2, "Error while processing AfterRunSuccess event (ignored)");
+            }
         }
 
-        /// <summary>
-        /// Called after Run() falied (after IsRunningRightNow set to false)
-        /// </summary>
-        protected virtual void OnAfterRunFail()
+        /// <remarks>
+        /// Invokes <see cref="AfterRunFail"/> event - don't forget to call base.OnAfterRunSuccess in override
+        /// </remarks>
+        /// <remarks>
+        /// Attention! Any exception, catched during AfterRunFail.Invoke, is written to error log and ignored.
+        /// </remarks>
+        protected virtual void OnAfterRunFail(IServiceProvider serviceProvider, Exception ex)
         {
-            // nothing
+            try
+            {
+                AfterRunFail?.Invoke(this, new ExceptionEventArgs(serviceProvider, ex));
+            }
+            catch (Exception ex2)
+            {
+                logger.LogError(0, ex2, "Error while processing AfterRunFail event (ignored)");
+            }
         }
     }
 }

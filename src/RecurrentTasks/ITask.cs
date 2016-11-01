@@ -38,7 +38,17 @@
         TimeSpan Interval { get; set; }
 
         /// <summary>
-        /// Raises when exception catched during task run.
+        /// Called before Run() is called (even before IsRunningRightNow set to true).
+        /// </summary>
+        event EventHandler<ServiceProviderEventArgs> BeforeRun;
+
+        /// <summary>
+        /// Called after Run() sucessfully finished (after IsRunningRightNow set to false)
+        /// </summary>
+        event EventHandler<ServiceProviderEventArgs> AfterRunSuccess;
+
+        /// <summary>
+        /// Called after Run() failed (after IsRunningRightNow set to false)
         /// </summary>
         event EventHandler<ExceptionEventArgs> AfterRunFail;
 

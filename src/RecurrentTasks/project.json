@@ -1,12 +1,12 @@
 {
-  "version": "3.0.0",
+  "version": "3.1.0",
   "title": "RecurrentTasks",
   "copyright": "Dmitry Popov, 2016",
   "packOptions": {
     "summary": "RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...",
     "tags": [ "task", "job", "recurrent", "recurring", "aspnetcore" ],
     "owners": [ "Dmitry Popov" ],
-    "releaseNotes": "Initial v3 release",
+    "releaseNotes": "ITask.BeforeRun, ITask.AfterRunSuccess events added",
     "licenseUrl": "https://github.com/justdmitry/RecurrentTasks/blob/master/LICENSE",
     "projectUrl": "https://github.com/justdmitry/RecurrentTasks",
     "repository": {
