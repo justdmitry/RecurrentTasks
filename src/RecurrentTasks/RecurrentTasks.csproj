@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Copyright>Dmitry Popov, 2016</Copyright>
+    <AssemblyTitle>RecurrentTasks</AssemblyTitle>
+    <TargetFrameworks>net451;net46;netstandard1.3</TargetFrameworks>
+    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
+    <AssemblyName>RecurrentTasks</AssemblyName>
+    <PackageId>RecurrentTasks</PackageId>
+    <PackageTags>task;job;recurrent;recurring;aspnetcore</PackageTags>
+    <PackageReleaseNotes>ITask.BeforeRun, ITask.AfterRunSuccess events added</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/justdmitry/RecurrentTasks</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/justdmitry/RecurrentTasks/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/justdmitry/RecurrentTasks.git</RepositoryUrl>
+    <Version>3.1.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="1.0.1" />
+  </ItemGroup>
+</Project>

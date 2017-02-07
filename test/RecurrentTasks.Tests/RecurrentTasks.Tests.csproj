@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net451;net46;netcoreapp1.0</TargetFrameworks>
+    <AssemblyName>RecurrentTasks.Tests</AssemblyName>
+    <PackageId>RecurrentTasks.Tests</PackageId>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-preview-20170106-08" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.0.1" />
+    <PackageReference Include="xunit" Version="2.2.0-beta5-build3474" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0-beta5-build1225" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\RecurrentTasks\RecurrentTasks.csproj" />
+  </ItemGroup>
+</Project>

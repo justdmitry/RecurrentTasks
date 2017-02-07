@@ -1,25 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26127.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{79344640-D2E5-4A31-880B-C6A9B0CC5F78}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9E4275D8-C660-4EA0-8B82-CA1E1E15DC2F}"
 	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RecurrentTasks", "src\RecurrentTasks\RecurrentTasks.xproj", "{0B62072E-451A-46B0-B0BA-3FB2CB25501A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecurrentTasks", "src\RecurrentTasks\RecurrentTasks.csproj", "{0B62072E-451A-46B0-B0BA-3FB2CB25501A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{69202143-C3E5-48BB-BAD5-9FD35AB76EF8}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RecurrentTasks.Tests", "test\RecurrentTasks.Tests\RecurrentTasks.Tests.xproj", "{650A5A85-5956-491E-9312-5E25A27D1108}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecurrentTasks.Tests", "test\RecurrentTasks.Tests\RecurrentTasks.Tests.csproj", "{650A5A85-5956-491E-9312-5E25A27D1108}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{593F95E8-4047-48E7-A5AE-909668C1A482}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "RecurrentTasks.Sample", "sample\RecurrentTasks.Sample\RecurrentTasks.Sample.xproj", "{00D3BBCA-6803-4BBC-BF81-41F8EAED2EE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecurrentTasks.Sample", "sample\RecurrentTasks.Sample\RecurrentTasks.Sample.csproj", "{00D3BBCA-6803-4BBC-BF81-41F8EAED2EE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
