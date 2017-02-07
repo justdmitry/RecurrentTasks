@@ -78,4 +78,3 @@ Target [framework/platform moniker](https://github.com/dotnet/corefx/blob/master
 * Microsoft.AspNetCore.Http.Abstractions
 * Microsoft.Extensions.Logging.Abstractions
 * Microsoft.Extensions.DependencyInjection.Abstractions
-* System.Threading
