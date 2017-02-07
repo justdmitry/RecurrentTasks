@@ -1,14 +1,15 @@
 version: N{build}
+image: Visual Studio 2017 RC
 before_build:
 - cmd: dotnet restore
 build:
   verbosity: minimal
 test_script:
-- cmd: dotnet test test/RecurrentTasks.Tests
+- cmd: dotnet test test/RecurrentTasks.Tests/RecurrentTasks.Tests.csproj
 notifications:
-- provider: Webhook
-  url: https://webhooks.gitter.im/e/19ebdd411d6933184fda
-  method: POST
+- provider: Slack
+  incoming_webhook:
+    secure: vd1CyDY+qcA6To11uFIgZjgVeWiu1y5VpuJprMq0FAFziOKMK0trEHOH5hMm7RSAn8ksXzoHhk1VkVjTBJlhopnM692O0rZFXhbcqBCweqw=
   on_build_success: true
   on_build_failure: true
   on_build_status_changed: true
