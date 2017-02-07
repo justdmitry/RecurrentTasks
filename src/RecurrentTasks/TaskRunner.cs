@@ -7,7 +7,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.DependencyInjection;
 
-    public class TaskRunner<TRunnable> : ITask<TRunnable> 
+    public class TaskRunner<TRunnable> : ITask<TRunnable>
         where TRunnable: IRunnable
     {
         private readonly EventWaitHandle breakEvent = new ManualResetEvent(false);
@@ -23,7 +23,7 @@
         /// <param name="serviceScopeFactory">Фабрика для создания Scope (при запуске задачи)</param>
         public TaskRunner(ILoggerFactory loggerFactory, IServiceScopeFactory serviceScopeFactory)
         {
-            this.logger = loggerFactory.CreateLogger(this.GetType().FullName);
+            this.logger = loggerFactory.CreateLogger($"{this.GetType().Namespace}.{nameof(TaskRunner<TRunnable>)}<{typeof(TRunnable).FullName}>");
             ServiceScopeFactory = serviceScopeFactory;
             RunStatus = new TaskRunStatus();
         }
