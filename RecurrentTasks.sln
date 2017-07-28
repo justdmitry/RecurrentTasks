@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26127.3
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{79344640-D2E5-4A31-880B-C6A9B0CC5F78}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9E4275D8-C660-4EA0-8B82-CA1E1E15DC2F}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
+		codecov.yml = codecov.yml
+		LICENSE = LICENSE
 		README.md = README.md
+		testpublishreport.ps1 = testpublishreport.ps1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecurrentTasks", "src\RecurrentTasks\RecurrentTasks.csproj", "{0B62072E-451A-46B0-B0BA-3FB2CB25501A}"
