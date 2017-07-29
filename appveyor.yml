@@ -5,7 +5,7 @@ before_build:
 build:
   verbosity: minimal
 test_script:
-- cmd: dotnet test test/RecurrentTasks.Tests/RecurrentTasks.Tests.csproj
+- ps: ./testpublishreport.ps1
 notifications:
 - provider: Slack
   incoming_webhook:
