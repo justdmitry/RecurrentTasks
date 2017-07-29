@@ -8,7 +8,9 @@ Ideal, when you don't need to run many/heavy tasks and don't want to use "big" s
 
 Written for **ASP.NET Core** (ASP.NET 5, ASP.NET vNext).
 
-[![Build status](https://ci.appveyor.com/api/projects/status/uucaowlbcxybi4v6/branch/master?svg=true)](https://ci.appveyor.com/project/justdmitry/recurrenttasks/branch/master) [![NuGet](https://img.shields.io/nuget/v/RecurrentTasks.svg?maxAge=86400&style=flat)](https://www.nuget.org/packages/RecurrentTasks/)
+[![Build status](https://ci.appveyor.com/api/projects/status/uucaowlbcxybi4v6/branch/master?svg=true)](https://ci.appveyor.com/project/justdmitry/recurrenttasks/branch/master) 
+[![NuGet](https://img.shields.io/nuget/v/RecurrentTasks.svg?maxAge=86400&style=flat)](https://www.nuget.org/packages/RecurrentTasks/) 
+[![codecov](https://codecov.io/gh/justdmitry/RecurrentTasks/branch/master/graph/badge.svg)](https://codecov.io/gh/justdmitry/RecurrentTasks)
 
 ## Main features
 
