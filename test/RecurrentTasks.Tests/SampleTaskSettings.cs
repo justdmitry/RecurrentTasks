@@ -10,5 +10,9 @@
         public bool MustThrowError { get; set; } = false;
 
         public ManualResetEventSlim CanContinueRun = new ManualResetEventSlim(true);
+
+        public bool MustSetIntervalToZero { get; set; } = false;
+
+        public string FormatResult { get; set; }
     }
 }

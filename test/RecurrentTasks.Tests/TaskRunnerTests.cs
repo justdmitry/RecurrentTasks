@@ -46,6 +46,20 @@
         }
 
         [Fact]
+        public void Task_Cant_Start_With_Negative_FirstDelay()
+        {
+            Assert.ThrowsAny<ArgumentOutOfRangeException>(() => sampleTask.Start(TimeSpan.FromSeconds(-1)));
+        }
+
+        [Fact]
+        public void Task_Cant_Start_With_Negative_Interval()
+        {
+            sampleTask.Interval = TimeSpan.FromSeconds(-1);
+
+            Assert.ThrowsAny<InvalidOperationException>(() => sampleTask.Start(TimeSpan.Zero));
+        }
+
+        [Fact]
         public void Task_CanNotStartTwice()
         {
             sampleTask.Start(TimeSpan.Zero);
@@ -58,35 +72,121 @@
         }
 
         [Fact]
-        public void Task_RunAgainAndAgain()
+        public void Task_Set_RunningCulture()
         {
-            sampleTask.Interval = TimeSpan.FromSeconds(2);
+            sampleTask.Interval = TimeSpan.FromSeconds(1);
+
+            sampleTask.RunningCulture = new System.Globalization.CultureInfo("en-US");
 
             sampleTask.Start(TimeSpan.Zero);
 
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
+
+            Assert.Equal("123456.78", settings.FormatResult);
+
+            // resetting event
+            settings.TaskRunCalled.Reset();
+
+            sampleTask.RunningCulture = new System.Globalization.CultureInfo("ru-RU");
+
+            // waiting for next run - default interval and little more
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
+
+            Assert.Equal("123456,78", settings.FormatResult);
+        }
+
+        [Fact]
+        public void Task_RunAgainAndAgain()
+        {
+            sampleTask.Interval = TimeSpan.FromSeconds(1);
+
+            sampleTask.Start(TimeSpan.Zero);
+
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
 
             // resetting event
             settings.TaskRunCalled.Reset();
 
             // waiting for next run - default interval and little more
-            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(3)));
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
+        }
+
+        [Fact]
+        public void Task_RunAgainAndAgain_When_AfterRunSuccess_ThrowsException()
+        {
+            var afterRunCalled = new ManualResetEventSlim();
+
+            sampleTask.Interval = TimeSpan.FromSeconds(1);
+
+            sampleTask.AfterRunSuccess += (o, a) => { afterRunCalled.Set(); throw new Exception("Test exception"); };
+
+            sampleTask.Start(TimeSpan.Zero);
+
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
+
+            Assert.True(afterRunCalled.Wait(TimeSpan.FromSeconds(1)));
+
+            // resetting event
+            settings.TaskRunCalled.Reset();
+
+            // waiting for next run - default interval and little more
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
+        }
+
+        [Fact]
+        public void Task_RunAgainAndAgain_When_AfterRunFail_ThrowsException()
+        {
+            var afterRunCalled = new ManualResetEventSlim();
+
+            settings.MustThrowError = true;
+
+            sampleTask.Interval = TimeSpan.FromSeconds(1);
+
+            sampleTask.AfterRunFail += (o, a) => { afterRunCalled.Set(); throw new Exception("Test exception"); };
+
+            sampleTask.Start(TimeSpan.Zero);
+
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
+
+            Assert.True(afterRunCalled.Wait(TimeSpan.FromSeconds(1)));
+
+            // resetting event
+            settings.TaskRunCalled.Reset();
+
+            // waiting for next run - default interval and little more
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
         }
 
         [Fact]
         public void Task_CanStop()
         {
+            sampleTask.Interval = TimeSpan.FromSeconds(1);
+
+            sampleTask.Start(TimeSpan.Zero);
+
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
+
+            settings.TaskRunCalled.Reset();
+            sampleTask.Stop();
+
+            // should NOT run again - waiting twice default interval and little more
+            Assert.False(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1 * 2 + 1)));
+        }
+
+        [Fact]
+        public void Task_Stops_When_IntervalZero()
+        {
+            settings.MustSetIntervalToZero = true;
+
             sampleTask.Interval = TimeSpan.FromSeconds(2);
 
             sampleTask.Start(TimeSpan.Zero);
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
-            settings.TaskRunCalled.Reset();
-            sampleTask.Stop();
+            Assert.Equal(TimeSpan.Zero, sampleTask.Interval);
 
-            // should NOT run again - waiting twice default interval and little more
-            Assert.False(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2 * 2 + 1)));
+            Assert.False(sampleTask.IsStarted);
         }
 
         [Fact]
@@ -158,6 +258,14 @@
 
             // waiting very little time, not 'full' 5 secs
             Assert.True(settings.TaskRunCalled.Wait(1000), "Not run immediately :( ");
+        }
+
+        [Fact]
+        public void Task_Cant_RunImmediately_Without_Start()
+        {
+            sampleTask.Interval = TimeSpan.FromSeconds(5);
+
+            Assert.ThrowsAny<InvalidOperationException>(() => sampleTask.TryRunImmediately());
         }
 
         [Fact]

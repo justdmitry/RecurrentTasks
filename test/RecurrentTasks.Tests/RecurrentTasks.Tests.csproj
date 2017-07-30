@@ -4,6 +4,7 @@
     <AssemblyName>RecurrentTasks.Tests</AssemblyName>
     <PackageId>RecurrentTasks.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <RootNamespace>RecurrentTasks</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Codecov" Version="1.0.1" />
@@ -11,6 +12,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.0.1" />
+    <PackageReference Include="Moq" Version="4.7.99" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
