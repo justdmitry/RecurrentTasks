@@ -1,11 +1,16 @@
 version: N{build}
+configuration: Debug
 image: Visual Studio 2017
+
 before_build:
 - cmd: dotnet restore
+
 build:
   verbosity: minimal
+
 test_script:
 - ps: ./testpublishreport.ps1
+
 notifications:
 - provider: Slack
   incoming_webhook:
