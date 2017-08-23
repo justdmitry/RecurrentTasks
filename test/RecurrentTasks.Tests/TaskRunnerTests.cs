@@ -1,10 +1,10 @@
 ﻿namespace RecurrentTasks
 {
     using System;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.DependencyInjection;
-    using Xunit;
     using System.Threading;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Xunit;
 
     public class TaskRunnerTests : IDisposable
     {
@@ -118,7 +118,11 @@
 
             sampleTask.Interval = TimeSpan.FromSeconds(1);
 
-            sampleTask.AfterRunSuccess += (o, a) => { afterRunCalled.Set(); throw new Exception("Test exception"); };
+            sampleTask.AfterRunSuccess += (o, a) =>
+            {
+                afterRunCalled.Set();
+                throw new Exception("Test exception");
+            };
 
             sampleTask.Start(TimeSpan.Zero);
 
@@ -142,7 +146,11 @@
 
             sampleTask.Interval = TimeSpan.FromSeconds(1);
 
-            sampleTask.AfterRunFail += (o, a) => { afterRunCalled.Set(); throw new Exception("Test exception"); };
+            sampleTask.AfterRunFail += (o, a) =>
+            {
+                afterRunCalled.Set();
+                throw new Exception("Test exception");
+            };
 
             sampleTask.Start(TimeSpan.Zero);
 
@@ -170,7 +178,7 @@
             sampleTask.Stop();
 
             // should NOT run again - waiting twice default interval and little more
-            Assert.False(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1 * 2 + 1)));
+            Assert.False(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(3)));
         }
 
         [Fact]
@@ -283,7 +291,7 @@
             settings.TaskRunCalled.Reset();
 
             // should run again - waiting twice default interval and little more
-            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2 * 2 + 1)));
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(5)));
         }
 
         [Fact]

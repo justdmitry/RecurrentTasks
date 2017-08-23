@@ -5,12 +5,13 @@
     public class ExceptionEventArgs : ServiceProviderEventArgs
     {
         public ExceptionEventArgs(IServiceProvider serviceProvider, Exception exception)
-            :base(serviceProvider)
+            : base(serviceProvider)
         {
             if (exception == null)
             {
                 throw new ArgumentNullException(nameof(exception));
             }
+
             this.Exception = exception;
         }
 

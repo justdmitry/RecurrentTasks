@@ -21,7 +21,6 @@
         [HttpPost]
         public IActionResult Index(string command)
         {
-
             switch (command)
             {
                 case "STOP":
@@ -29,18 +28,21 @@
                     {
                         myTask.Stop();
                     }
+
                     break;
                 case "START":
                     if (!myTask.IsStarted)
                     {
                         myTask.Start(TimeSpan.Zero);
                     }
+
                     break;
                 case "TRYRUN":
                     if (myTask.IsStarted)
                     {
                         myTask.TryRunImmediately();
                     }
+
                     break;
             }
 

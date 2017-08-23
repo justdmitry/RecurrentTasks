@@ -4,11 +4,11 @@
     using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
 
     public class TaskRunner<TRunnable> : ITask<TRunnable>
-        where TRunnable: IRunnable
+        where TRunnable : IRunnable
     {
         private readonly EventWaitHandle runImmediately = new AutoResetEvent(false);
 
@@ -18,8 +18,10 @@
 
         private CancellationTokenSource cancellationTokenSource;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TaskRunner{TRunnable}"/> class.
+        /// </summary>
         /// <param name="loggerFactory">Фабрика для создания логгера</param>
-        /// <param name="interval">Интервал (периодичность) запуска задачи</param>
         /// <param name="serviceScopeFactory">Фабрика для создания Scope (при запуске задачи)</param>
         public TaskRunner(ILoggerFactory loggerFactory, IServiceScopeFactory serviceScopeFactory)
         {
@@ -37,9 +39,12 @@
         /// <inheritdoc />
         public event EventHandler<ServiceProviderEventArgs> AfterRunSuccess;
 
-        TaskRunStatus ITask.RunStatus { get { return RunStatus; } }
+        TaskRunStatus ITask.RunStatus
+        {
+            get { return RunStatus; }
+        }
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="ITask.RunStatus" />
         public TaskRunStatus RunStatus { get; protected set; }
 
         /// <inheritdoc />
@@ -69,15 +74,18 @@
             {
                 throw new ArgumentOutOfRangeException(nameof(firstRunDelay), "First run delay can't be negative");
             }
+
             if (Interval < TimeSpan.Zero)
             {
                 throw new InvalidOperationException("Interval can't be negative");
             }
+
             logger.LogInformation("Start() called...");
             if (mainTask != null)
             {
                 throw new InvalidOperationException("Already started");
             }
+
             cancellationTokenSource = new CancellationTokenSource();
             mainTask = Task.Run(() => MainLoop(firstRunDelay));
         }
@@ -90,6 +98,7 @@
             {
                 throw new InvalidOperationException("Can't stop without start");
             }
+
             cancellationTokenSource.Cancel();
         }
 
@@ -100,6 +109,7 @@
             {
                 throw new InvalidOperationException("Can't run without Start");
             }
+
             runImmediately.Set();
         }
 
@@ -113,7 +123,9 @@
                 logger.LogDebug("Sleeping for {0}...", sleepInterval);
                 RunStatus.NextRunTime = DateTimeOffset.Now.Add(sleepInterval);
                 var signaled = WaitHandle.WaitAny(events, sleepInterval);
-                if (signaled == 0) // index of signalled. zero is for 'cancellationToken'
+
+                // index of signalled handler. zero is for 'cancellationToken'
+                if (signaled == 0)
                 {
                     // must stop and quit
                     logger.LogWarning("CancellationToken signaled, stopping...");
@@ -121,6 +133,7 @@
                     cancellationTokenSource = null;
                     break;
                 }
+
                 logger.LogDebug("It is time! Creating scope...");
                 using (var scope = ServiceScopeFactory.CreateScope())
                 {
@@ -144,7 +157,7 @@
 
                         var startTime = DateTimeOffset.Now;
 
-                        var runnable = (TRunnable) scope.ServiceProvider.GetRequiredService(typeof(TRunnable));
+                        var runnable = (TRunnable)scope.ServiceProvider.GetRequiredService(typeof(TRunnable));
 
                         logger.LogInformation("Calling Run()...");
                         runnable.Run(this, cancellationTokenSource.Token);
@@ -169,6 +182,7 @@
                         {
                             RunStatus.FirstFailTime = DateTimeOffset.Now;
                         }
+
                         RunStatus.FailsCount++;
                         IsRunningRightNow = false;
 
@@ -179,6 +193,7 @@
                         IsRunningRightNow = false;
                     }
                 }
+
                 if (Interval.Ticks == 0)
                 {
                     logger.LogWarning("Interval equal to zero. Stopping...");
@@ -189,20 +204,23 @@
                     sleepInterval = Interval; // return to normal (important after first run only)
                 }
             }
+
             logger.LogInformation("MainLoop() finished.");
         }
 
-        /// <remarks>
-        /// Invokes <see cref="BeforeRun"/> event - don't forget to call base.OnBeforeRun in override
-        /// </remarks>
+        /// <summary>
+        /// Invokes <see cref="BeforeRun"/> event (don't forget to call base.OnBeforeRun in override)
+        /// </summary>
+        /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args</param>
         protected virtual void OnBeforeRun(IServiceProvider serviceProvider)
         {
             BeforeRun?.Invoke(this, new ServiceProviderEventArgs(serviceProvider));
         }
 
-        /// <remarks>
-        /// Invokes <see cref="AfterRunSuccess"/> event - don't forget to call base.OnAfterRunSuccess in override
-        /// </remarks>
+        /// <summary>
+        /// Invokes <see cref="AfterRunSuccess"/> event (don't forget to call base.OnAfterRunSuccess in override)
+        /// </summary>
+        /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args</param>
         /// <remarks>
         /// Attention! Any exception, catched during AfterRunSuccess.Invoke, is written to error log and ignored.
         /// </remarks>
@@ -218,9 +236,11 @@
             }
         }
 
-        /// <remarks>
+        /// <summary>
         /// Invokes <see cref="AfterRunFail"/> event - don't forget to call base.OnAfterRunSuccess in override
-        /// </remarks>
+        /// </summary>
+        /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args</param>
+        /// <param name="ex"><see cref="Exception"/> to be passes in event args</param>
         /// <remarks>
         /// Attention! Any exception, catched during AfterRunFail.Invoke, is written to error log and ignored.
         /// </remarks>

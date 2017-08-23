@@ -9,13 +9,13 @@
         public static void StartTask<TRunnable>(this IApplicationBuilder app, TimeSpan interval)
             where TRunnable : IRunnable
         {
-            StartTask<TRunnable>(app, t => { t.Interval = interval; });
+            StartTask<TRunnable>(app, t => t.Interval = interval);
         }
 
         public static void StartTask<TRunnable>(this IApplicationBuilder app, TimeSpan interval, TimeSpan initialTimeout)
             where TRunnable : IRunnable
         {
-            StartTask<TRunnable>(app, t => { t.Interval = interval; }, initialTimeout);
+            StartTask<TRunnable>(app, t => t.Interval = interval, initialTimeout);
         }
 
         public static void StartTask<TRunnable>(this IApplicationBuilder app, Action<ITask> setupAction)
@@ -31,6 +31,7 @@
             {
                 throw new ArgumentNullException(nameof(app));
             }
+
             if (setupAction == null)
             {
                 throw new ArgumentNullException(nameof(setupAction));

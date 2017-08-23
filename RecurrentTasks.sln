@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{79344640-D2E5-4A31-880B-C6A9B0CC5F78}"
 EndProject
@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		appveyor.yml = appveyor.yml
 		codecov.yml = codecov.yml
+		GlobalSuppressions.cs = GlobalSuppressions.cs
 		LICENSE = LICENSE
 		README.md = README.md
 		testpublishreport.ps1 = testpublishreport.ps1
@@ -52,5 +53,8 @@ Global
 		{0B62072E-451A-46B0-B0BA-3FB2CB25501A} = {79344640-D2E5-4A31-880B-C6A9B0CC5F78}
 		{650A5A85-5956-491E-9312-5E25A27D1108} = {69202143-C3E5-48BB-BAD5-9FD35AB76EF8}
 		{00D3BBCA-6803-4BBC-BF81-41F8EAED2EE9} = {593F95E8-4047-48E7-A5AE-909668C1A482}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B3D68945-7789-41F4-B4E9-63D2C7FF3721}
 	EndGlobalSection
 EndGlobal

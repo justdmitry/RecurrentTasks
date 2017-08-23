@@ -7,6 +7,9 @@
     <PackageId>RecurrentTasks.Sample</PackageId>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Update="wwwroot\**\*;Views\**\*;web.config">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
@@ -18,6 +21,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.0.1" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\RecurrentTasks\RecurrentTasks.csproj" />

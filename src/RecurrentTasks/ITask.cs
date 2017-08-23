@@ -6,6 +6,21 @@
     public interface ITask
     {
         /// <summary>
+        /// Called before Run() is called (even before IsRunningRightNow set to true).
+        /// </summary>
+        event EventHandler<ServiceProviderEventArgs> BeforeRun;
+
+        /// <summary>
+        /// Called after Run() sucessfully finished (after IsRunningRightNow set to false)
+        /// </summary>
+        event EventHandler<ServiceProviderEventArgs> AfterRunSuccess;
+
+        /// <summary>
+        /// Called after Run() failed (after IsRunningRightNow set to false)
+        /// </summary>
+        event EventHandler<ExceptionEventArgs> AfterRunFail;
+
+        /// <summary>
         ///   <b>true</b> when task is started and will run with specified intervals
         ///   <b>false</b> when task is stopped and will NOT run
         /// </summary>
@@ -38,23 +53,9 @@
         TimeSpan Interval { get; set; }
 
         /// <summary>
-        /// Called before Run() is called (even before IsRunningRightNow set to true).
-        /// </summary>
-        event EventHandler<ServiceProviderEventArgs> BeforeRun;
-
-        /// <summary>
-        /// Called after Run() sucessfully finished (after IsRunningRightNow set to false)
-        /// </summary>
-        event EventHandler<ServiceProviderEventArgs> AfterRunSuccess;
-
-        /// <summary>
-        /// Called after Run() failed (after IsRunningRightNow set to false)
-        /// </summary>
-        event EventHandler<ExceptionEventArgs> AfterRunFail;
-
-        /// <summary>
         /// Start task (and delay first run for specified interval)
         /// </summary>
+        /// <param name="firstRunDelay">Delay before first task run (use TimeSpan.Zero for no delay)</param>
         /// <exception cref="InvalidOperationException">Task is already started</exception>
         void Start(TimeSpan firstRunDelay);
 

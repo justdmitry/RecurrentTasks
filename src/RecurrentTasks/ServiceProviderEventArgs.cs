@@ -10,6 +10,7 @@
             {
                 throw new ArgumentNullException(nameof(serviceProvider));
             }
+
             this.ServiceProvider = serviceProvider;
         }
 

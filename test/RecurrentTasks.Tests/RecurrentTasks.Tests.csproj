@@ -7,6 +7,9 @@
     <RootNamespace>RecurrentTasks</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Codecov" Version="1.0.1" />
     <PackageReference Include="coveralls.net" Version="0.7.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
@@ -15,6 +18,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.0.1" />
     <PackageReference Include="Moq" Version="4.7.99" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
   </ItemGroup>

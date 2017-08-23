@@ -5,11 +5,11 @@
 
     public class SampleTaskSettings
     {
-        public readonly ManualResetEventSlim TaskRunCalled = new ManualResetEventSlim(false);
+        public ManualResetEventSlim TaskRunCalled { get; } = new ManualResetEventSlim(false);
 
         public bool MustThrowError { get; set; } = false;
 
-        public ManualResetEventSlim CanContinueRun = new ManualResetEventSlim(true);
+        public ManualResetEventSlim CanContinueRun { get; } = new ManualResetEventSlim(true);
 
         public bool MustSetIntervalToZero { get; set; } = false;
 
