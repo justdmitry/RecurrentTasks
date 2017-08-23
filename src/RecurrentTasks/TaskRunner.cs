@@ -39,12 +39,7 @@
         /// <inheritdoc />
         public event EventHandler<ServiceProviderEventArgs> AfterRunSuccess;
 
-        TaskRunStatus ITask.RunStatus
-        {
-            get { return RunStatus; }
-        }
-
-        /// <inheritdoc cref="ITask.RunStatus" />
+        /// <inheritdoc />
         public TaskRunStatus RunStatus { get; protected set; }
 
         /// <inheritdoc />
