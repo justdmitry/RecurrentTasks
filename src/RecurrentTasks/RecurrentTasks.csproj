@@ -7,12 +7,12 @@
     <AssemblyName>RecurrentTasks</AssemblyName>
     <PackageId>RecurrentTasks</PackageId>
     <PackageTags>task;job;recurrent;recurring;aspnetcore</PackageTags>
-    <PackageReleaseNotes>Logger name changed</PackageReleaseNotes>
+    <PackageReleaseNotes>`CancellationToken` added to `IRunnable.Run` (it becomes cancelled when `ITask.Stop()` is called).</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/justdmitry/RecurrentTasks</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/justdmitry/RecurrentTasks/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/justdmitry/RecurrentTasks.git</RepositoryUrl>
-    <Version>3.2.0</Version>
+    <Version>4.0.0</Version>
     <Description>RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...</Description>
     <Authors>just_dmitry</Authors>
     <Company />
