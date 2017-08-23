@@ -39,7 +39,7 @@ public class MyFirstTask : IRunnable
         this.logger = logger;
     }
     
-    public void Run(ITask currentTask)
+    public void Run(ITask currentTask, CancellationToken cancellationToken)
     {
         // Place your code here
     }
