@@ -10,13 +10,13 @@
     public class TaskRunner<TRunnable> : ITask<TRunnable>
         where TRunnable: IRunnable
     {
-        private readonly EventWaitHandle breakEvent = new ManualResetEvent(false);
-
         private readonly EventWaitHandle runImmediately = new AutoResetEvent(false);
 
         private ILogger logger;
 
         private Task mainTask;
+
+        private CancellationTokenSource cancellationTokenSource;
 
         /// <param name="loggerFactory">Фабрика для создания логгера</param>
         /// <param name="interval">Интервал (периодичность) запуска задачи</param>
@@ -78,7 +78,7 @@
             {
                 throw new InvalidOperationException("Already started");
             }
-            breakEvent.Reset();
+            cancellationTokenSource = new CancellationTokenSource();
             mainTask = Task.Run(() => MainLoop(firstRunDelay));
         }
 
@@ -90,7 +90,7 @@
             {
                 throw new InvalidOperationException("Can't stop without start");
             }
-            breakEvent.Set();
+            cancellationTokenSource.Cancel();
         }
 
         /// <inheritdoc />
@@ -106,18 +106,19 @@
         protected void MainLoop(TimeSpan firstRunDelay)
         {
             logger.LogInformation("MainLoop() started. Running...");
-            var events = new WaitHandle[] { breakEvent, runImmediately };
+            var events = new WaitHandle[] { cancellationTokenSource.Token.WaitHandle, runImmediately };
             var sleepInterval = firstRunDelay;
             while (true)
             {
                 logger.LogDebug("Sleeping for {0}...", sleepInterval);
                 RunStatus.NextRunTime = DateTimeOffset.Now.Add(sleepInterval);
                 var signaled = WaitHandle.WaitAny(events, sleepInterval);
-                if (signaled == 0) // index of signalled. zero is for 'breakEvent'
+                if (signaled == 0) // index of signalled. zero is for 'cancellationToken'
                 {
                     // must stop and quit
-                    logger.LogWarning("BreakEvent is set, stopping...");
+                    logger.LogWarning("CancellationToken signaled, stopping...");
                     mainTask = null;
+                    cancellationTokenSource = null;
                     break;
                 }
                 logger.LogDebug("It is time! Creating scope...");
@@ -146,7 +147,7 @@
                         var runnable = (TRunnable) scope.ServiceProvider.GetRequiredService(typeof(TRunnable));
 
                         logger.LogInformation("Calling Run()...");
-                        runnable.Run(this);
+                        runnable.Run(this, cancellationTokenSource.Token);
                         logger.LogInformation("Done.");
 
                         RunStatus.LastRunTime = startTime;
@@ -181,7 +182,7 @@
                 if (Interval.Ticks == 0)
                 {
                     logger.LogWarning("Interval equal to zero. Stopping...");
-                    breakEvent.Set();
+                    cancellationTokenSource.Cancel();
                 }
                 else
                 {

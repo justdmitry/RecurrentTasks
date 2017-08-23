@@ -13,6 +13,8 @@
 
         public bool MustSetIntervalToZero { get; set; } = false;
 
+        public bool MustRunUntilCancelled { get; set; } = false;
+
         public string FormatResult { get; set; }
     }
 }

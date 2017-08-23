@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Codecov" Version="1.0.1" />
+    <PackageReference Include="coveralls.net" Version="0.7.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.0.1" />

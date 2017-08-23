@@ -184,6 +184,8 @@
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
+            Thread.Sleep(100); // wait for cycles complete
+
             Assert.Equal(TimeSpan.Zero, sampleTask.Interval);
 
             Assert.False(sampleTask.IsStarted);
@@ -332,7 +334,30 @@
             // waiting 2 seconds max, then failing
             Assert.True(eventGenerated.Wait(TimeSpan.FromSeconds(2)));
 
-            System.Threading.Thread.Sleep(200); // wait for run cycle completed
+            System.Threading.Thread.Sleep(200); // wait for run cycle completed before test dispose
+        }
+
+        [Fact]
+        public void Run_Cancelled_When_Task_Stopped()
+        {
+            var eventGenerated = new ManualResetEventSlim(false);
+
+            settings.MustRunUntilCancelled = true;
+            sampleTask.AfterRunSuccess += (object sender, ServiceProviderEventArgs e) =>
+            {
+                eventGenerated.Set();
+            };
+
+            sampleTask.Start(TimeSpan.Zero);
+
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
+
+            sampleTask.Stop();
+
+            // waiting 2 seconds max, then failing
+            Assert.True(eventGenerated.Wait(TimeSpan.FromSeconds(2)));
+
+            System.Threading.Thread.Sleep(200); // wait for run cycle completed before test dispose
         }
     }
 }
