@@ -18,7 +18,7 @@ Written for **ASP.NET Core** (ASP.NET 5, ASP.NET vNext).
 * First run (after Start) is delayed at random value (10-30 sec, customizable) to prevent app freeze during statup;
 * Run "immediately" (without waiting for next scheduled time);
 * Change run interval while running;
-* Single-execution-at-a-time: A task already running will wait before running again;
+* Single-execution-at-a-time: A task already running will wait before running again (timer for "next" run will start only after "current" run completes);
 * `RunStatus` property contains:
     * last/next run times;
     * last run result (success / exception);
