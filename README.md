@@ -18,6 +18,7 @@ Written for **ASP.NET Core** (ASP.NET 5, ASP.NET vNext).
 * First run (after Start) is delayed at random value (10-30 sec, customizable) to prevent app freeze during statup;
 * Run "immediately" (without waiting for next scheduled time);
 * Change run interval while running;
+* Single-execution-at-a-time: A task already running will wait before running again (timer for "next" run will start only after "current" run completes);
 * `RunStatus` property contains:
     * last/next run times;
     * last run result (success / exception);
@@ -67,7 +68,7 @@ public void Configure(IApplicationBuilder app, ...)
 }
 ```
 
-And viola! Your task will run every 5 minutes. Until you application alive, of course.
+And voila! Your task will run every 5 minutes. Until your application ends, of course.
 
 ## Installation
 
