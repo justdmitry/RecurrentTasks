@@ -2,9 +2,10 @@
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
 
     public interface IRunnable
     {
-        void Run(ITask currentTask, CancellationToken cancellationToken);
+        Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken);
     }
 }

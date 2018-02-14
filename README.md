@@ -15,6 +15,7 @@ Written for **ASP.NET Core** (ASP.NET 5, ASP.NET vNext).
 ## Main features
 
 * Start and Stop your task at any time;
+* CancelationToken may be used for Stopping;
 * First run (after Start) is delayed at random value (10-30 sec, customizable) to prevent app freeze during statup;
 * Run "immediately" (without waiting for next scheduled time);
 * Change run interval while running;
@@ -40,7 +41,7 @@ public class MyFirstTask : IRunnable
         this.logger = logger;
     }
     
-    public void Run(ITask currentTask, CancellationToken cancellationToken)
+    public Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
         // Place your code here
     }
@@ -48,6 +49,8 @@ public class MyFirstTask : IRunnable
 ```
 
 You can add any parameters to constructor, while they are resolvable from DI container (including scope-lifetime services, because new scope is created for every task run).
+
+By default, new instance of `IRunnable` is created for every task run, but you may change lifetime in `AddTask` (see below). Use `IServiceProvider` passed to `RunAsync` to obtain scope-wide services if you force your task be singleton.
 
 ### 2. Register and start your task in `Startup.cs`
 
@@ -70,11 +73,28 @@ public void Configure(IApplicationBuilder app, ...)
 
 And voila! Your task will run every 5 minutes. Until your application ends, of course.
 
+`AddTask` adds your `MyFirstTask` to DI container with transient lifetime (new instance will be created for every task run). Pass desired lifetime to `AddTask()` to override: `services.AddTask<MyFirstTask>(ServiceLifetime.Singleton)`.
+
+### Run immediately
+
+Anywhere in you app:
+
+```csharp
+// obtain reference to your task
+var myTask = serviceProvider.GetService<ITask<MyFirstTask>>();
+
+// poke it
+if (myTask.IsStarted)
+{
+    myTask.TryRunImmediately();
+}
+```
+
 ## Installation
 
 Use NuGet package [RecurrentTasks](https://www.nuget.org/packages/RecurrentTasks/)
 
-Target [framework/platform moniker](https://github.com/dotnet/corefx/blob/master/Documentation/architecture/net-platform-standard.md): **`netstandard1.3`**
+Target [framework/platform moniker](https://github.com/dotnet/corefx/blob/master/Documentation/architecture/net-platform-standard.md): **`net451`**, **`net46`**, **`netstandard1.3`**, **`netstandard2.0`**
 
 ### Dependencies
 

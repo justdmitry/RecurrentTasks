@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Xunit;
@@ -118,7 +119,7 @@
 
             sampleTask.Interval = TimeSpan.FromSeconds(1);
 
-            sampleTask.AfterRunSuccess += (o, a) =>
+            sampleTask.AfterRunSuccessAsync = (o, a) =>
             {
                 afterRunCalled.Set();
                 throw new Exception("Test exception");
@@ -146,7 +147,7 @@
 
             sampleTask.Interval = TimeSpan.FromSeconds(1);
 
-            sampleTask.AfterRunFail += (o, a) =>
+            sampleTask.AfterRunFailAsync = (o, a, e) =>
             {
                 afterRunCalled.Set();
                 throw new Exception("Test exception");
@@ -176,6 +177,24 @@
 
             settings.TaskRunCalled.Reset();
             sampleTask.Stop();
+
+            // should NOT run again - waiting twice default interval and little more
+            Assert.False(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(3)));
+        }
+
+        [Fact]
+        public void Task_CanStopByCancellationToken()
+        {
+            var cts = new CancellationTokenSource();
+
+            sampleTask.Interval = TimeSpan.FromSeconds(1);
+
+            sampleTask.Start(TimeSpan.Zero, cts.Token);
+
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
+
+            settings.TaskRunCalled.Reset();
+            cts.Cancel();
 
             // should NOT run again - waiting twice default interval and little more
             Assert.False(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(3)));
@@ -299,9 +318,10 @@
         {
             var eventGenerated = new ManualResetEventSlim(false);
 
-            sampleTask.BeforeRun += (object sender, ServiceProviderEventArgs e) =>
+            sampleTask.BeforeRunAsync = (o, s) =>
             {
                 eventGenerated.Set();
+                return Task.FromResult(0);
             };
 
             sampleTask.Start(TimeSpan.Zero);
@@ -315,9 +335,10 @@
         {
             var eventGenerated = new ManualResetEventSlim(false);
 
-            sampleTask.AfterRunSuccess += (object sender, ServiceProviderEventArgs e) =>
+            sampleTask.AfterRunSuccessAsync = (o, s) =>
             {
                 eventGenerated.Set();
+                return Task.FromResult(0);
             };
 
             sampleTask.Start(TimeSpan.Zero);
@@ -332,9 +353,10 @@
             var eventGenerated = new ManualResetEventSlim(false);
 
             settings.MustThrowError = true;
-            sampleTask.AfterRunFail += (object sender, ExceptionEventArgs e) =>
+            sampleTask.AfterRunFailAsync = (s, t, e) =>
             {
                 eventGenerated.Set();
+                return Task.FromResult(0);
             };
 
             sampleTask.Start(TimeSpan.Zero);
@@ -351,9 +373,10 @@
             var eventGenerated = new ManualResetEventSlim(false);
 
             settings.MustRunUntilCancelled = true;
-            sampleTask.AfterRunSuccess += (object sender, ServiceProviderEventArgs e) =>
+            sampleTask.AfterRunSuccessAsync = (s, t) =>
             {
                 eventGenerated.Set();
+                return Task.FromResult(0);
             };
 
             sampleTask.Start(TimeSpan.Zero);

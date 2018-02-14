@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
 
     public class SampleTask : IRunnable
     {
@@ -12,7 +13,7 @@
             this.settings = settings;
         }
 
-        public void Run(ITask currentTask, CancellationToken cancellationToken)
+        public Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
         {
             if (settings.MustSetIntervalToZero)
             {
@@ -40,6 +41,12 @@
             {
                 throw new Exception("CanContinueRun not set during 10 seconds. Something wrong with test...");
             }
+
+#if NET452
+            return Task.FromResult(0);
+#else
+            return Task.CompletedTask;
+#endif
         }
     }
 }

@@ -31,13 +31,13 @@
         }
 
         /// <inheritdoc />
-        public event EventHandler<ServiceProviderEventArgs> BeforeRun;
+        public Func<IServiceProvider, ITask, Task> BeforeRunAsync { get; set; }
 
         /// <inheritdoc />
-        public event EventHandler<ExceptionEventArgs> AfterRunFail;
+        public Func<IServiceProvider, ITask, Task> AfterRunSuccessAsync { get; set; }
 
         /// <inheritdoc />
-        public event EventHandler<ServiceProviderEventArgs> AfterRunSuccess;
+        public Func<IServiceProvider, ITask, Exception, Task> AfterRunFailAsync { get; set; }
 
         /// <inheritdoc />
         public TaskRunStatus RunStatus { get; protected set; }
@@ -65,6 +65,12 @@
         /// <inheritdoc />
         public void Start(TimeSpan firstRunDelay)
         {
+            Start(firstRunDelay, CancellationToken.None);
+        }
+
+        /// <inheritdoc />
+        public void Start(TimeSpan firstRunDelay, CancellationToken cancellationToken)
+        {
             if (firstRunDelay < TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(nameof(firstRunDelay), "First run delay can't be negative");
@@ -81,8 +87,9 @@
                 throw new InvalidOperationException("Already started");
             }
 
-            cancellationTokenSource = new CancellationTokenSource();
-            mainTask = Task.Run(() => MainLoop(firstRunDelay));
+            cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+            mainTask = Task.Run(() => MainLoop(firstRunDelay, cancellationTokenSource.Token));
         }
 
         /// <inheritdoc />
@@ -108,19 +115,18 @@
             runImmediately.Set();
         }
 
-        protected void MainLoop(TimeSpan firstRunDelay)
+        protected void MainLoop(TimeSpan firstRunDelay, CancellationToken cancellationToken)
         {
             logger.LogInformation("MainLoop() started. Running...");
-            var events = new WaitHandle[] { cancellationTokenSource.Token.WaitHandle, runImmediately };
             var sleepInterval = firstRunDelay;
+            var handles = new[] { cancellationToken.WaitHandle, runImmediately };
             while (true)
             {
                 logger.LogDebug("Sleeping for {0}...", sleepInterval);
                 RunStatus.NextRunTime = DateTimeOffset.Now.Add(sleepInterval);
-                var signaled = WaitHandle.WaitAny(events, sleepInterval);
+                WaitHandle.WaitAny(handles, sleepInterval);
 
-                // index of signalled handler. zero is for 'cancellationToken'
-                if (signaled == 0)
+                if (cancellationToken.IsCancellationRequested)
                 {
                     // must stop and quit
                     logger.LogWarning("CancellationToken signaled, stopping...");
@@ -155,7 +161,7 @@
                         var runnable = (TRunnable)scope.ServiceProvider.GetRequiredService(typeof(TRunnable));
 
                         logger.LogInformation("Calling Run()...");
-                        runnable.Run(this, cancellationTokenSource.Token);
+                        runnable.RunAsync(this, scope.ServiceProvider, cancellationToken).GetAwaiter().GetResult();
                         logger.LogInformation("Done.");
 
                         RunStatus.LastRunTime = startTime;
@@ -204,16 +210,19 @@
         }
 
         /// <summary>
-        /// Invokes <see cref="BeforeRun"/> event (don't forget to call base.OnBeforeRun in override)
+        /// Invokes <see cref="BeforeRunAsync"/> handler (don't forget to call base.OnBeforeRun in override)
         /// </summary>
         /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args</param>
         protected virtual void OnBeforeRun(IServiceProvider serviceProvider)
         {
-            BeforeRun?.Invoke(this, new ServiceProviderEventArgs(serviceProvider));
+            if (BeforeRunAsync != null)
+            {
+                BeforeRunAsync(serviceProvider, this).GetAwaiter().GetResult();
+            }
         }
 
         /// <summary>
-        /// Invokes <see cref="AfterRunSuccess"/> event (don't forget to call base.OnAfterRunSuccess in override)
+        /// Invokes <see cref="AfterRunSuccessAsync"/> handler (don't forget to call base.OnAfterRunSuccess in override)
         /// </summary>
         /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args</param>
         /// <remarks>
@@ -223,7 +232,10 @@
         {
             try
             {
-                AfterRunSuccess?.Invoke(this, new ServiceProviderEventArgs(serviceProvider));
+                if (AfterRunSuccessAsync != null)
+                {
+                    AfterRunSuccessAsync(serviceProvider, this).GetAwaiter().GetResult();
+                }
             }
             catch (Exception ex2)
             {
@@ -232,7 +244,7 @@
         }
 
         /// <summary>
-        /// Invokes <see cref="AfterRunFail"/> event - don't forget to call base.OnAfterRunSuccess in override
+        /// Invokes <see cref="AfterRunFailAsync"/> handler - don't forget to call base.OnAfterRunSuccess in override
         /// </summary>
         /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args</param>
         /// <param name="ex"><see cref="Exception"/> to be passes in event args</param>
@@ -243,7 +255,10 @@
         {
             try
             {
-                AfterRunFail?.Invoke(this, new ExceptionEventArgs(serviceProvider, ex));
+                if (AfterRunFailAsync != null)
+                {
+                    AfterRunFailAsync(serviceProvider, this, ex).GetAwaiter().GetResult();
+                }
             }
             catch (Exception ex2)
             {

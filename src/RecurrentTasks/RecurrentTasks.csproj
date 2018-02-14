@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Copyright>Dmitry Popov, 2016</Copyright>
+    <Copyright>Dmitry Popov, 2016-2018</Copyright>
     <AssemblyTitle>RecurrentTasks</AssemblyTitle>
-    <TargetFrameworks>net451;net46;netstandard1.3</TargetFrameworks>
+    <TargetFrameworks>net451;net46;netstandard1.3;netstandard2.0</TargetFrameworks>
     <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
     <AssemblyName>RecurrentTasks</AssemblyName>
     <PackageId>RecurrentTasks</PackageId>
     <PackageTags>task;job;recurrent;recurring;aspnetcore</PackageTags>
-    <PackageReleaseNotes>`CancellationToken` added to `IRunnable.Run` (it becomes cancelled when `ITask.Stop()` is called).</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/justdmitry/RecurrentTasks/releases/tag/v5.0.0</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/justdmitry/RecurrentTasks</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/justdmitry/RecurrentTasks/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/justdmitry/RecurrentTasks.git</RepositoryUrl>
-    <Version>4.0.0</Version>
+    <Version>5.0.0</Version>
     <Description>RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...</Description>
     <Authors>just_dmitry</Authors>
     <Company />

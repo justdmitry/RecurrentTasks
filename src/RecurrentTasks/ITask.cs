@@ -2,23 +2,25 @@
 {
     using System;
     using System.Globalization;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     public interface ITask
     {
         /// <summary>
         /// Called before Run() is called (even before IsRunningRightNow set to true).
         /// </summary>
-        event EventHandler<ServiceProviderEventArgs> BeforeRun;
+        Func<IServiceProvider, ITask, Task> BeforeRunAsync { get; set; }
 
         /// <summary>
         /// Called after Run() sucessfully finished (after IsRunningRightNow set to false)
         /// </summary>
-        event EventHandler<ServiceProviderEventArgs> AfterRunSuccess;
+        Func<IServiceProvider, ITask, Task> AfterRunSuccessAsync { get; set; }
 
         /// <summary>
         /// Called after Run() failed (after IsRunningRightNow set to false)
         /// </summary>
-        event EventHandler<ExceptionEventArgs> AfterRunFail;
+        Func<IServiceProvider, ITask, Exception, Task> AfterRunFailAsync { get; set; }
 
         /// <summary>
         ///   <b>true</b> when task is started and will run with specified intervals
@@ -58,6 +60,14 @@
         /// <param name="firstRunDelay">Delay before first task run (use TimeSpan.Zero for no delay)</param>
         /// <exception cref="InvalidOperationException">Task is already started</exception>
         void Start(TimeSpan firstRunDelay);
+
+        /// <summary>
+        /// Start task (and delay first run for specified interval) with cancellation token (instead of <see cref="Stop"/>)
+        /// </summary>
+        /// <param name="firstRunDelay">Delay before first task run (use TimeSpan.Zero for no delay)</param>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <exception cref="InvalidOperationException">Task is already started</exception>
+        void Start(TimeSpan firstRunDelay, CancellationToken cancellationToken);
 
         /// <summary>
         /// Stop task (will NOT break if currently running)

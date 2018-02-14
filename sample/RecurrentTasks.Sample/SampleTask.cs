@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
 
     public class SampleTask : IRunnable
@@ -16,7 +17,7 @@
             this.runHistory = runHistory;
         }
 
-        public void Run(ITask currentTask, CancellationToken cancellationToken)
+        public Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
         {
             var msg = string.Format("Run at: {0}", DateTimeOffset.Now);
             runHistory.Messages.Add(msg);
@@ -24,6 +25,7 @@
 
             // You can change interval for [all] next runs!
             currentTask.Interval = currentTask.Interval.Add(TimeSpan.FromSeconds(1));
+            return Task.CompletedTask;
         }
     }
 }
