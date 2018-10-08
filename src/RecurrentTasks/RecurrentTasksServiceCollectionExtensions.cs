@@ -2,11 +2,15 @@
 {
     using System;
     using System.Linq;
+    using Microsoft.Extensions.Hosting;
     using RecurrentTasks;
 
     public static class RecurrentTasksServiceCollectionExtensions
     {
-        public static IServiceCollection AddTask<TRunnable>(this IServiceCollection services, ServiceLifetime runnableLifetime = ServiceLifetime.Transient)
+        public static IServiceCollection AddTask<TRunnable>(
+            this IServiceCollection services,
+            Action<TaskOptions<TRunnable>> optionsAction,
+            ServiceLifetime runnableLifetime = ServiceLifetime.Transient)
             where TRunnable : IRunnable
         {
             if (services == null)
@@ -22,7 +26,10 @@
                 services.Add(new ServiceDescriptor(runnableType, runnableType, runnableLifetime));
             }
 
+            services.Configure(optionsAction);
+
             services.AddSingleton<ITask<TRunnable>, TaskRunner<TRunnable>>();
+            services.AddSingleton<IHostedService>(s => s.GetRequiredService<ITask<TRunnable>>());
 
             return services;
         }

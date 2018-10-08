@@ -17,7 +17,7 @@
         {
             if (settings.MustSetIntervalToZero)
             {
-                currentTask.Interval = TimeSpan.Zero;
+                currentTask.Options.Interval = TimeSpan.Zero;
             }
 
             settings.FormatResult = 123456.78.ToString();
@@ -42,11 +42,7 @@
                 throw new Exception("CanContinueRun not set during 10 seconds. Something wrong with test...");
             }
 
-#if NET452
-            return Task.FromResult(0);
-#else
             return Task.CompletedTask;
-#endif
         }
     }
 }

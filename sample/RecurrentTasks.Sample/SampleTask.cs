@@ -24,7 +24,7 @@
             logger.LogDebug(msg);
 
             // You can change interval for [all] next runs!
-            currentTask.Interval = currentTask.Interval.Add(TimeSpan.FromSeconds(1));
+            currentTask.Options.Interval = currentTask.Options.Interval.Add(TimeSpan.FromSeconds(1));
             return Task.CompletedTask;
         }
     }

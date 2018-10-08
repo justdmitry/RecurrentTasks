@@ -1,27 +1,11 @@
 ﻿namespace RecurrentTasks
 {
     using System;
-    using System.Globalization;
     using System.Threading;
-    using System.Threading.Tasks;
+    using Microsoft.Extensions.Hosting;
 
-    public interface ITask
+    public interface ITask : IHostedService
     {
-        /// <summary>
-        /// Called before Run() is called (even before IsRunningRightNow set to true).
-        /// </summary>
-        Func<IServiceProvider, ITask, Task> BeforeRunAsync { get; set; }
-
-        /// <summary>
-        /// Called after Run() sucessfully finished (after IsRunningRightNow set to false)
-        /// </summary>
-        Func<IServiceProvider, ITask, Task> AfterRunSuccessAsync { get; set; }
-
-        /// <summary>
-        /// Called after Run() failed (after IsRunningRightNow set to false)
-        /// </summary>
-        Func<IServiceProvider, ITask, Exception, Task> AfterRunFailAsync { get; set; }
-
         /// <summary>
         ///   <b>true</b> when task is started and will run with specified intervals
         ///   <b>false</b> when task is stopped and will NOT run
@@ -37,37 +21,28 @@
         bool IsRunningRightNow { get; }
 
         /// <summary>
-        /// CultureInfo to set when running (to override 'random' Culture of thread from thread pool)
-        /// </summary>
-        CultureInfo RunningCulture { get; set; }
-
-        /// <summary>
         /// Information about task result (last run time, last exception, etc)
         /// </summary>
         TaskRunStatus RunStatus { get; }
 
         /// <summary>
-        /// Interval between runs
+        /// Task options
         /// </summary>
-        /// <remarks>
-        /// You may change this value in your Run() implementation :)
-        /// </remarks>
-        TimeSpan Interval { get; set; }
+        /// <remarks>All properties may be changed while running (take effect on next run)</remarks>
+        TaskOptions Options { get; }
 
         /// <summary>
-        /// Start task (and delay first run for specified interval)
+        /// Start task with cancellation token (instead of <see cref="Stop"/>)
         /// </summary>
-        /// <param name="firstRunDelay">Delay before first task run (use TimeSpan.Zero for no delay)</param>
         /// <exception cref="InvalidOperationException">Task is already started</exception>
-        void Start(TimeSpan firstRunDelay);
+        void Start();
 
         /// <summary>
-        /// Start task (and delay first run for specified interval) with cancellation token (instead of <see cref="Stop"/>)
+        /// Start task with cancellation token (instead of <see cref="Stop"/>)
         /// </summary>
-        /// <param name="firstRunDelay">Delay before first task run (use TimeSpan.Zero for no delay)</param>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <exception cref="InvalidOperationException">Task is already started</exception>
-        void Start(TimeSpan firstRunDelay, CancellationToken cancellationToken);
+        void Start(CancellationToken cancellationToken);
 
         /// <summary>
         /// Stop task (will NOT break if currently running)

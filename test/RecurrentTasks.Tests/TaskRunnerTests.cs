@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Xunit;
 
@@ -22,8 +23,11 @@
                 .AddTransient(_ => new SampleTask(settings))
                 .BuildServiceProvider();
 
-            sampleTask = new TaskRunner<SampleTask>(lf, serviceProvider.GetService<IServiceScopeFactory>());
-            sampleTask.Interval = TimeSpan.FromSeconds(5);
+            var options = new TaskOptions<SampleTask>();
+            options.FirstRunDelay = TimeSpan.Zero;
+
+            sampleTask = new TaskRunner<SampleTask>(lf, options, serviceProvider.GetService<IServiceScopeFactory>());
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(5);
         }
 
         public void Dispose()
@@ -40,7 +44,7 @@
         [Fact]
         public void Task_CanStart()
         {
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             // waiting 2 seconds max, then failing
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
@@ -49,37 +53,38 @@
         [Fact]
         public void Task_Cant_Start_With_Negative_FirstDelay()
         {
-            Assert.ThrowsAny<ArgumentOutOfRangeException>(() => sampleTask.Start(TimeSpan.FromSeconds(-1)));
+            sampleTask.Options.FirstRunDelay = TimeSpan.FromSeconds(-1);
+            Assert.ThrowsAny<ArgumentOutOfRangeException>(() => sampleTask.Start());
         }
 
         [Fact]
         public void Task_Cant_Start_With_Negative_Interval()
         {
-            sampleTask.Interval = TimeSpan.FromSeconds(-1);
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(-1);
 
-            Assert.ThrowsAny<InvalidOperationException>(() => sampleTask.Start(TimeSpan.Zero));
+            Assert.ThrowsAny<InvalidOperationException>(() => sampleTask.Start());
         }
 
         [Fact]
         public void Task_CanNotStartTwice()
         {
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             // waiting 2 seconds max (then failing)
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
             // and real test - trying to start again
-            var ex = Assert.Throws<InvalidOperationException>(() => sampleTask.Start(TimeSpan.FromSeconds(1)));
+            var ex = Assert.Throws<InvalidOperationException>(() => sampleTask.Start());
         }
 
         [Fact]
         public void Task_Set_RunningCulture()
         {
-            sampleTask.Interval = TimeSpan.FromSeconds(1);
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(1);
 
-            sampleTask.RunningCulture = new System.Globalization.CultureInfo("en-US");
+            sampleTask.Options.RunCulture = new System.Globalization.CultureInfo("en-US");
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
 
@@ -88,7 +93,7 @@
             // resetting event
             settings.TaskRunCalled.Reset();
 
-            sampleTask.RunningCulture = new System.Globalization.CultureInfo("ru-RU");
+            sampleTask.Options.RunCulture = new System.Globalization.CultureInfo("ru-RU");
 
             // waiting for next run - default interval and little more
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
@@ -99,9 +104,9 @@
         [Fact]
         public void Task_RunAgainAndAgain()
         {
-            sampleTask.Interval = TimeSpan.FromSeconds(1);
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(1);
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
 
@@ -117,15 +122,15 @@
         {
             var afterRunCalled = new ManualResetEventSlim();
 
-            sampleTask.Interval = TimeSpan.FromSeconds(1);
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(1);
 
-            sampleTask.AfterRunSuccessAsync = (o, a) =>
+            sampleTask.Options.AfterRunSuccess = (o, a) =>
             {
                 afterRunCalled.Set();
                 throw new Exception("Test exception");
             };
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
 
@@ -145,15 +150,15 @@
 
             settings.MustThrowError = true;
 
-            sampleTask.Interval = TimeSpan.FromSeconds(1);
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(1);
 
-            sampleTask.AfterRunFailAsync = (o, a, e) =>
+            sampleTask.Options.AfterRunFail = (o, a, e) =>
             {
                 afterRunCalled.Set();
                 throw new Exception("Test exception");
             };
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
 
@@ -169,9 +174,9 @@
         [Fact]
         public void Task_CanStop()
         {
-            sampleTask.Interval = TimeSpan.FromSeconds(1);
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(1);
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
 
@@ -187,9 +192,9 @@
         {
             var cts = new CancellationTokenSource();
 
-            sampleTask.Interval = TimeSpan.FromSeconds(1);
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(1);
 
-            sampleTask.Start(TimeSpan.Zero, cts.Token);
+            sampleTask.Start(cts.Token);
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(1)));
 
@@ -205,15 +210,15 @@
         {
             settings.MustSetIntervalToZero = true;
 
-            sampleTask.Interval = TimeSpan.FromSeconds(2);
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(2);
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
             Thread.Sleep(100); // wait for cycles complete
 
-            Assert.Equal(TimeSpan.Zero, sampleTask.Interval);
+            Assert.Equal(TimeSpan.Zero, sampleTask.Options.Interval);
 
             Assert.False(sampleTask.IsStarted);
         }
@@ -221,7 +226,7 @@
         [Fact]
         public void Task_CanNotStopTwice()
         {
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
@@ -234,11 +239,46 @@
         }
 
         [Fact]
+        public void HostedService_CanStart()
+        {
+            (sampleTask as IHostedService).StartAsync(CancellationToken.None);
+
+            // waiting 2 seconds max, then failing
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
+        }
+
+        [Fact]
+        public void HostedService_DoNotStartWithoutAutostart()
+        {
+            sampleTask.Options.AutoStart = false;
+            (sampleTask as IHostedService).StartAsync(CancellationToken.None);
+
+            // waiting 2 seconds max
+            Assert.False(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
+        }
+
+        [Fact]
+        public void HostedService_CanStop()
+        {
+            (sampleTask as IHostedService).StartAsync(CancellationToken.None);
+
+            // waiting 2 seconds max, then failing
+            Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
+
+            settings.TaskRunCalled.Reset();
+
+            (sampleTask as IHostedService).StopAsync(CancellationToken.None);
+
+            // should NOT run again - waiting twice default interval and little more
+            Assert.False(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(3)));
+        }
+
+        [Fact]
         public void Task_IsStarted_Works()
         {
             Assert.False(sampleTask.IsStarted);
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
@@ -258,7 +298,7 @@
 
             settings.CanContinueRun.Reset(); // do not complete 'Run' without permission!
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
             Assert.True(sampleTask.IsRunningRightNow, "Oops, IsRunningRightNow is not 'true'. Something is broken!!!");
@@ -275,9 +315,9 @@
         [Fact]
         public void Task_RunImmediately_Works()
         {
-            sampleTask.Interval = TimeSpan.FromSeconds(5);
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(5);
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)), "Failed to start first time");
 
@@ -292,7 +332,7 @@
         [Fact]
         public void Task_Cant_RunImmediately_Without_Start()
         {
-            sampleTask.Interval = TimeSpan.FromSeconds(5);
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(5);
 
             Assert.ThrowsAny<InvalidOperationException>(() => sampleTask.TryRunImmediately());
         }
@@ -300,10 +340,10 @@
         [Fact]
         public void Task_RunningAgainAfterException()
         {
-            sampleTask.Interval = TimeSpan.FromSeconds(2);
+            sampleTask.Options.Interval = TimeSpan.FromSeconds(2);
 
             settings.MustThrowError = true;
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 
@@ -318,16 +358,32 @@
         {
             var eventGenerated = new ManualResetEventSlim(false);
 
-            sampleTask.BeforeRunAsync = (o, s) =>
+            sampleTask.Options.BeforeRun = (o, s) =>
             {
                 eventGenerated.Set();
-                return Task.FromResult(0);
+                return Task.FromResult(true);
             };
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             // waiting a little, then failing
             Assert.True(eventGenerated.Wait(TimeSpan.FromSeconds(2)));
+        }
+
+        [Fact]
+        public void Task_BeforeRunCanCancelRun()
+        {
+            var eventGenerated = new ManualResetEventSlim(false);
+
+            sampleTask.Options.BeforeRun = (o, s) =>
+            {
+                return Task.FromResult(false);
+            };
+
+            sampleTask.Start();
+
+            // waiting a little
+            Assert.False(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
         }
 
         [Fact]
@@ -335,13 +391,13 @@
         {
             var eventGenerated = new ManualResetEventSlim(false);
 
-            sampleTask.AfterRunSuccessAsync = (o, s) =>
+            sampleTask.Options.AfterRunSuccess = (o, s) =>
             {
                 eventGenerated.Set();
                 return Task.FromResult(0);
             };
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             // waiting a little, then failing
             Assert.True(eventGenerated.Wait(TimeSpan.FromSeconds(2)));
@@ -353,13 +409,13 @@
             var eventGenerated = new ManualResetEventSlim(false);
 
             settings.MustThrowError = true;
-            sampleTask.AfterRunFailAsync = (s, t, e) =>
+            sampleTask.Options.AfterRunFail = (s, t, e) =>
             {
                 eventGenerated.Set();
                 return Task.FromResult(0);
             };
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             // waiting 2 seconds max, then failing
             Assert.True(eventGenerated.Wait(TimeSpan.FromSeconds(2)));
@@ -373,13 +429,13 @@
             var eventGenerated = new ManualResetEventSlim(false);
 
             settings.MustRunUntilCancelled = true;
-            sampleTask.AfterRunSuccessAsync = (s, t) =>
+            sampleTask.Options.AfterRunSuccess = (s, t) =>
             {
                 eventGenerated.Set();
                 return Task.FromResult(0);
             };
 
-            sampleTask.Start(TimeSpan.Zero);
+            sampleTask.Start();
 
             Assert.True(settings.TaskRunCalled.Wait(TimeSpan.FromSeconds(2)));
 

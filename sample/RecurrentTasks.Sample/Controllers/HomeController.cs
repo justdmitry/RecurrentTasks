@@ -33,7 +33,8 @@
                 case "START":
                     if (!myTask.IsStarted)
                     {
-                        myTask.Start(TimeSpan.Zero);
+                        myTask.Options.FirstRunDelay = TimeSpan.Zero;
+                        myTask.Start();
                     }
 
                     break;
