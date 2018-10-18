@@ -32,6 +32,11 @@
         TaskOptions Options { get; }
 
         /// <summary>
+        /// Type of <see cref="IRunnable"/> this task use (for easier retrieval for logging etc)
+        /// </summary>
+        Type RunnableType { get; }
+
+        /// <summary>
         /// Start task with cancellation token (instead of <see cref="Stop"/>)
         /// </summary>
         /// <exception cref="InvalidOperationException">Task is already started</exception>
