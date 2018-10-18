@@ -79,6 +79,9 @@
         /// <inheritdoc />
         public TaskOptions Options { get; }
 
+        /// <inheritdoc />
+        public Type RunnableType => typeof(TRunnable);
+
         private IServiceScopeFactory ServiceScopeFactory { get; set; }
 
         Task IHostedService.StartAsync(CancellationToken cancellationToken)

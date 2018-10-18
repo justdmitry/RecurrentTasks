@@ -1,8 +1,13 @@
 ﻿namespace RecurrentTasks
 {
+    using System;
+
     public interface ITask<TRunnable> : ITask
         where TRunnable : IRunnable
     {
-        // Nothing
+        /// <summary>
+        /// Type of <see cref="TRunnable"/> this task use (for easier retrieval for logging etc)
+        /// </summary>
+        Type RunnableType { get; }
     }
 }
