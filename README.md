@@ -6,7 +6,7 @@ Each task is a separate `Task`, which sleeps in background for a while, wakes up
 
 Ideal, when you don't need to run many/heavy tasks and don't want to use "big" solutions with persistence and other bells and whistles.
 
-Written for **ASP.NET Core** (ASP.NET 5, ASP.NET vNext).
+Written for **ASP.NET Core 2.1** (support for ASP.NET 5 and ASP.NET Core 1.0 and 2.0 is dropped since v6, use [v5.0.0 release](https://github.com/justdmitry/RecurrentTasks/releases/tag/v5.0.0) if you need support for old frameworks).
 
 [![Build status](https://ci.appveyor.com/api/projects/status/uucaowlbcxybi4v6/branch/master?svg=true)](https://ci.appveyor.com/project/justdmitry/recurrenttasks/branch/master) 
 [![NuGet](https://img.shields.io/nuget/v/RecurrentTasks.svg?maxAge=86400&style=flat)](https://www.nuget.org/packages/RecurrentTasks/) 
@@ -15,6 +15,7 @@ Written for **ASP.NET Core** (ASP.NET 5, ASP.NET vNext).
 ## Main features
 
 * Start and Stop your task at any time;
+* [`IHostedService`](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/multi-container-microservice-net-applications/background-tasks-with-ihostedservice) implemented for ASP.Net Core 2.1 app lifetime support
 * CancelationToken may be used for Stopping;
 * First run (after Start) is delayed at random value (10-30 sec, customizable) to prevent app freeze during statup;
 * Run "immediately" (without waiting for next scheduled time);
@@ -59,21 +60,20 @@ By default, new instance of `IRunnable` is created for every task run, but you m
 public void ConfigureServices(IServiceCollection services)
 {
     ...
-    services.AddTask<MyFirstTask>();
+    services.AddTask<MyFirstTask>(o => o.AutoStart(TimeSpan.FromMinutes(5)));
     ...
 }
-    
-public void Configure(IApplicationBuilder app, ...)
-{
-    ...
-    app.StartTask<MyFirstTask>(TimeSpan.FromMinutes(5));
-    ...
-}
+
 ```
 
 And voila! Your task will run every 5 minutes. Until your application ends, of course.
 
-`AddTask` adds your `MyFirstTask` to DI container with transient lifetime (new instance will be created for every task run). Pass desired lifetime to `AddTask()` to override: `services.AddTask<MyFirstTask>(ServiceLifetime.Singleton)`.
+`AddTask` adds your `MyFirstTask` to DI container with transient lifetime (new instance will be created for every task run). Pass desired lifetime to `AddTask()` to override: 
+```csharp
+services.AddTask<MyFirstTask>(
+  o => o.AutoStart(TimeSpan.FromMinutes(5)),
+  ServiceLifetime.Singleton)`.
+```
 
 ### Run immediately
 
@@ -94,10 +94,11 @@ if (myTask.IsStarted)
 
 Use NuGet package [RecurrentTasks](https://www.nuget.org/packages/RecurrentTasks/)
 
-Target [framework/platform moniker](https://github.com/dotnet/corefx/blob/master/Documentation/architecture/net-platform-standard.md): **`net451`**, **`net46`**, **`netstandard1.3`**, **`netstandard2.0`**
 
 ### Dependencies
 
-* Microsoft.AspNetCore.Http.Abstractions
-* Microsoft.Extensions.Logging.Abstractions
-* Microsoft.Extensions.DependencyInjection.Abstractions
+* Microsoft.AspNetCore.Http.Abstractions, v2.1.0
+* Microsoft.Extensions.DependencyInjection.Abstractions, v2.1.0
+* Microsoft.Extensions.Hosting.Abstractions, v2.1.0
+* Microsoft.Extensions.Logging.Abstractions, v2.1.0
+* Microsoft.Extensions.Options, v2.1.0

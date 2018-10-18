@@ -5,14 +5,16 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
 
     public class TaskRunner<TRunnable> : ITask<TRunnable>
         where TRunnable : IRunnable
     {
         private readonly EventWaitHandle runImmediately = new AutoResetEvent(false);
 
-        private ILogger logger;
+        private readonly ILogger logger;
 
         private Task mainTask;
 
@@ -22,22 +24,42 @@
         /// Initializes a new instance of the <see cref="TaskRunner{TRunnable}"/> class.
         /// </summary>
         /// <param name="loggerFactory">Фабрика для создания логгера</param>
+        /// <param name="options">TaskOptions</param>
         /// <param name="serviceScopeFactory">Фабрика для создания Scope (при запуске задачи)</param>
-        public TaskRunner(ILoggerFactory loggerFactory, IServiceScopeFactory serviceScopeFactory)
+        public TaskRunner(ILoggerFactory loggerFactory, IOptions<TaskOptions<TRunnable>> options, IServiceScopeFactory serviceScopeFactory)
+            : this(loggerFactory, options.Value, serviceScopeFactory)
         {
+            // Nothing
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TaskRunner{TRunnable}"/> class.
+        /// </summary>
+        /// <param name="loggerFactory">Фабрика для создания логгера</param>
+        /// <param name="options">TaskOptions</param>
+        /// <param name="serviceScopeFactory">Фабрика для создания Scope (при запуске задачи)</param>
+        public TaskRunner(ILoggerFactory loggerFactory, TaskOptions<TRunnable> options, IServiceScopeFactory serviceScopeFactory)
+        {
+            if (loggerFactory == null)
+            {
+                throw new ArgumentNullException(nameof(loggerFactory));
+            }
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (serviceScopeFactory == null)
+            {
+                throw new ArgumentNullException(nameof(serviceScopeFactory));
+            }
+
             this.logger = loggerFactory.CreateLogger($"{this.GetType().Namespace}.{nameof(TaskRunner<TRunnable>)}<{typeof(TRunnable).FullName}>");
+            Options = options;
             ServiceScopeFactory = serviceScopeFactory;
             RunStatus = new TaskRunStatus();
         }
-
-        /// <inheritdoc />
-        public Func<IServiceProvider, ITask, Task> BeforeRunAsync { get; set; }
-
-        /// <inheritdoc />
-        public Func<IServiceProvider, ITask, Task> AfterRunSuccessAsync { get; set; }
-
-        /// <inheritdoc />
-        public Func<IServiceProvider, ITask, Exception, Task> AfterRunFailAsync { get; set; }
 
         /// <inheritdoc />
         public TaskRunStatus RunStatus { get; protected set; }
@@ -55,28 +77,45 @@
         public bool IsRunningRightNow { get; private set; }
 
         /// <inheritdoc />
-        public CultureInfo RunningCulture { get; set; }
-
-        /// <inheritdoc />
-        public TimeSpan Interval { get; set; }
+        public TaskOptions Options { get; }
 
         private IServiceScopeFactory ServiceScopeFactory { get; set; }
 
-        /// <inheritdoc />
-        public void Start(TimeSpan firstRunDelay)
+        Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {
-            Start(firstRunDelay, CancellationToken.None);
+            if (!IsStarted && Options.AutoStart)
+            {
+                Start();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        Task IHostedService.StopAsync(CancellationToken cancellationToken)
+        {
+            if (IsStarted)
+            {
+                Stop();
+            }
+
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc />
-        public void Start(TimeSpan firstRunDelay, CancellationToken cancellationToken)
+        public void Start()
         {
-            if (firstRunDelay < TimeSpan.Zero)
+            Start(CancellationToken.None);
+        }
+
+        /// <inheritdoc />
+        public void Start(CancellationToken cancellationToken)
+        {
+            if (Options.FirstRunDelay < TimeSpan.Zero)
             {
-                throw new ArgumentOutOfRangeException(nameof(firstRunDelay), "First run delay can't be negative");
+                throw new ArgumentOutOfRangeException(nameof(Options.FirstRunDelay), "First run delay can't be negative");
             }
 
-            if (Interval < TimeSpan.Zero)
+            if (Options.Interval < TimeSpan.Zero)
             {
                 throw new InvalidOperationException("Interval can't be negative");
             }
@@ -89,7 +128,7 @@
 
             cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-            mainTask = Task.Run(() => MainLoop(firstRunDelay, cancellationTokenSource.Token));
+            mainTask = Task.Run(() => MainLoop(Options.FirstRunDelay, cancellationTokenSource.Token));
         }
 
         /// <inheritdoc />
@@ -138,41 +177,43 @@
                 logger.LogDebug("It is time! Creating scope...");
                 using (var scope = ServiceScopeFactory.CreateScope())
                 {
-                    if (RunningCulture != null)
+                    if (Options.RunCulture != null)
                     {
-                        logger.LogDebug("Switching to {0} CultureInfo...", RunningCulture.Name);
-#if NET451
-                        Thread.CurrentThread.CurrentCulture = RunningCulture;
-                        Thread.CurrentThread.CurrentUICulture = RunningCulture;
-#else
-                        CultureInfo.CurrentCulture = RunningCulture;
-                        CultureInfo.CurrentUICulture = RunningCulture;
-#endif
+                        logger.LogDebug("Switching to {0} CultureInfo...", Options.RunCulture.Name);
+                        CultureInfo.CurrentCulture = Options.RunCulture;
+                        CultureInfo.CurrentUICulture = Options.RunCulture;
                     }
 
                     try
                     {
-                        OnBeforeRun(scope.ServiceProvider);
+                        var beforeRunResponse = OnBeforeRun(scope.ServiceProvider);
 
-                        IsRunningRightNow = true;
+                        if (!beforeRunResponse)
+                        {
+                            logger.LogInformation("Task run cancelled (BeforeRun returned 'false')");
+                        }
+                        else
+                        {
+                            IsRunningRightNow = true;
 
-                        var startTime = DateTimeOffset.Now;
+                            var startTime = DateTimeOffset.Now;
 
-                        var runnable = (TRunnable)scope.ServiceProvider.GetRequiredService(typeof(TRunnable));
+                            var runnable = (TRunnable)scope.ServiceProvider.GetRequiredService(typeof(TRunnable));
 
-                        logger.LogInformation("Calling Run()...");
-                        runnable.RunAsync(this, scope.ServiceProvider, cancellationToken).GetAwaiter().GetResult();
-                        logger.LogInformation("Done.");
+                            logger.LogInformation("Calling Run()...");
+                            runnable.RunAsync(this, scope.ServiceProvider, cancellationToken).GetAwaiter().GetResult();
+                            logger.LogInformation("Done.");
 
-                        RunStatus.LastRunTime = startTime;
-                        RunStatus.LastResult = TaskRunResult.Success;
-                        RunStatus.LastSuccessTime = DateTimeOffset.Now;
-                        RunStatus.FirstFailTime = DateTimeOffset.MinValue;
-                        RunStatus.FailsCount = 0;
-                        RunStatus.LastException = null;
-                        IsRunningRightNow = false;
+                            RunStatus.LastRunTime = startTime;
+                            RunStatus.LastResult = TaskRunResult.Success;
+                            RunStatus.LastSuccessTime = DateTimeOffset.Now;
+                            RunStatus.FirstFailTime = DateTimeOffset.MinValue;
+                            RunStatus.FailsCount = 0;
+                            RunStatus.LastException = null;
+                            IsRunningRightNow = false;
 
-                        OnAfterRunSuccess(scope.ServiceProvider);
+                            OnAfterRunSuccess(scope.ServiceProvider);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -195,14 +236,14 @@
                     }
                 }
 
-                if (Interval.Ticks == 0)
+                if (Options.Interval.Ticks == 0)
                 {
                     logger.LogWarning("Interval equal to zero. Stopping...");
                     cancellationTokenSource.Cancel();
                 }
                 else
                 {
-                    sleepInterval = Interval; // return to normal (important after first run only)
+                    sleepInterval = Options.Interval; // return to normal (important after first run only)
                 }
             }
 
@@ -213,12 +254,10 @@
         /// Invokes <see cref="BeforeRunAsync"/> handler (don't forget to call base.OnBeforeRun in override)
         /// </summary>
         /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args</param>
-        protected virtual void OnBeforeRun(IServiceProvider serviceProvider)
+        /// <returns>Return <b>falce</b> to cancel/skip task run</returns>
+        protected virtual bool OnBeforeRun(IServiceProvider serviceProvider)
         {
-            if (BeforeRunAsync != null)
-            {
-                BeforeRunAsync(serviceProvider, this).GetAwaiter().GetResult();
-            }
+            return Options.BeforeRun?.Invoke(serviceProvider, this).GetAwaiter().GetResult() ?? true;
         }
 
         /// <summary>
@@ -232,10 +271,7 @@
         {
             try
             {
-                if (AfterRunSuccessAsync != null)
-                {
-                    AfterRunSuccessAsync(serviceProvider, this).GetAwaiter().GetResult();
-                }
+                Options.AfterRunSuccess?.Invoke(serviceProvider, this).GetAwaiter().GetResult();
             }
             catch (Exception ex2)
             {
@@ -255,10 +291,7 @@
         {
             try
             {
-                if (AfterRunFailAsync != null)
-                {
-                    AfterRunFailAsync(serviceProvider, this, ex).GetAwaiter().GetResult();
-                }
+                Options.AfterRunFail?.Invoke(serviceProvider, this, ex).GetAwaiter().GetResult();
             }
             catch (Exception ex2)
             {
