@@ -94,10 +94,6 @@ if (myTask.IsStarted)
 
 Use NuGet package [RecurrentTasks](https://www.nuget.org/packages/RecurrentTasks/)
 
-## Testing
-
-Tests can be run with `dotnet test`.
-
 ### Dependencies
 
 * Microsoft.AspNetCore.Http.Abstractions, v2.1.0
@@ -105,3 +101,7 @@ Tests can be run with `dotnet test`.
 * Microsoft.Extensions.Hosting.Abstractions, v2.1.0
 * Microsoft.Extensions.Logging.Abstractions, v2.1.0
 * Microsoft.Extensions.Options, v2.1.0
+
+## Testing
+
+Tests can be run with `dotnet test`.
