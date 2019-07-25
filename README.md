@@ -94,6 +94,9 @@ if (myTask.IsStarted)
 
 Use NuGet package [RecurrentTasks](https://www.nuget.org/packages/RecurrentTasks/)
 
+## Testing
+
+Tests can be run with `dotnet test`.
 
 ### Dependencies
 
