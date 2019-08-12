@@ -1,21 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Copyright>Dmitry Popov, 2016-2018</Copyright>
+    <Copyright>Dmitry Popov, 2016-2019</Copyright>
     <AssemblyTitle>RecurrentTasks</AssemblyTitle>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>RecurrentTasks</AssemblyName>
     <PackageId>RecurrentTasks</PackageId>
     <PackageTags>task;job;recurrent;recurring;aspnetcore</PackageTags>
-    <PackageReleaseNotes>https://github.com/justdmitry/RecurrentTasks/releases/tag/v6.0.0</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/justdmitry/RecurrentTasks/releases/tag/v6.1.0</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/justdmitry/RecurrentTasks</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/justdmitry/RecurrentTasks/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/justdmitry/RecurrentTasks.git</RepositoryUrl>
-    <Version>6.0.2</Version>
+    <Version>6.1.0</Version>
     <Description>RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...</Description>
     <Authors>just_dmitry</Authors>
     <Company />
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">

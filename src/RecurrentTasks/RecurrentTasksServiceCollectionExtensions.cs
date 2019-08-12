@@ -20,8 +20,8 @@
 
             var runnableType = typeof(TRunnable);
 
-            // Register TRunnable in DI container, if not registered already
-            if (!services.Any(x => x.ServiceType == runnableType))
+            // Register TRunnable (if not an interface or abstract class) in DI container, if not registered already
+            if (!runnableType.IsAbstract && !services.Any(x => x.ServiceType == runnableType))
             {
                 services.Add(new ServiceDescriptor(runnableType, runnableType, runnableLifetime));
             }
