@@ -16,17 +16,15 @@
 
         public TaskRunnerTests()
         {
-            var lf = new LoggerFactory();
-            lf.AddConsole();
-
             var serviceProvider = new ServiceCollection()
+                .AddLogging(lb => lb.AddConsole())
                 .AddTransient(_ => new SampleTask(settings))
                 .BuildServiceProvider();
 
             var options = new TaskOptions<SampleTask>();
             options.FirstRunDelay = TimeSpan.Zero;
 
-            sampleTask = new TaskRunner<SampleTask>(lf, options, serviceProvider.GetService<IServiceScopeFactory>());
+            sampleTask = new TaskRunner<SampleTask>(serviceProvider.GetService<ILoggerFactory>(), options, serviceProvider.GetService<IServiceScopeFactory>());
             sampleTask.Options.Interval = TimeSpan.FromSeconds(5);
         }
 

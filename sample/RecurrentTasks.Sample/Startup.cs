@@ -17,12 +17,21 @@
             // SampleTask expect this instance in .ctor(), we need to register it in DI
             services.AddSingleton<SampleTaskRunHistory>();
 
+#if NETCOREAPP2_1
             services.AddMvc();
+#else
+            services.AddControllersWithViews();
+#endif
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
+#if NETCOREAPP2_1
             app.UseMvcWithDefaultRoute();
+#else
+            app.UseRouting();
+            app.UseEndpoints(c => c.MapDefaultControllerRoute());
+#endif
         }
     }
 }

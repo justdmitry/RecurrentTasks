@@ -1,7 +1,7 @@
 # General configurations, such as location of the code coverage report, location of the OpenCover and location of .NET
 $resultsFile = 'opencover-result.xml'
-$openCoverConsole = $ENV:USERPROFILE + '\.nuget\packages\OpenCover\4.6.519\tools\OpenCover.Console.exe'
-$codecovUploader = $ENV:USERPROFILE + '\.nuget\packages\codecov\1.1.0\tools\codecov.exe'
+$openCoverConsole = $ENV:USERPROFILE + '\.nuget\packages\OpenCover\4.7.922\tools\OpenCover.Console.exe'
+$codecovUploader = $ENV:USERPROFILE + '\.nuget\packages\codecov\1.9.0\tools\codecov.exe'
 $target = '-target: C:\Program Files\dotnet\dotnet.exe'
 
 # Configuration and execution of the tests
