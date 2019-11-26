@@ -7,7 +7,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
 
     public class TaskRunner<TRunnable> : ITask<TRunnable>
         where TRunnable : IRunnable
@@ -19,18 +18,6 @@
         private Task mainTask;
 
         private CancellationTokenSource cancellationTokenSource;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TaskRunner{TRunnable}"/> class.
-        /// </summary>
-        /// <param name="loggerFactory">Фабрика для создания логгера</param>
-        /// <param name="options">TaskOptions</param>
-        /// <param name="serviceScopeFactory">Фабрика для создания Scope (при запуске задачи)</param>
-        public TaskRunner(ILoggerFactory loggerFactory, IOptions<TaskOptions<TRunnable>> options, IServiceScopeFactory serviceScopeFactory)
-            : this(loggerFactory, options.Value, serviceScopeFactory)
-        {
-            // Nothing
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskRunner{TRunnable}"/> class.

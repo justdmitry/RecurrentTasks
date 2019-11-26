@@ -9,7 +9,7 @@
     {
         public static IServiceCollection AddTask<TRunnable>(
             this IServiceCollection services,
-            Action<TaskOptions<TRunnable>> optionsAction,
+            Action<TaskOptions<TRunnable>> optionsAction = null,
             ServiceLifetime runnableLifetime = ServiceLifetime.Transient)
             where TRunnable : IRunnable
         {
@@ -26,7 +26,12 @@
                 services.Add(new ServiceDescriptor(runnableType, runnableType, runnableLifetime));
             }
 
-            services.Configure(optionsAction);
+            services.AddSingleton(_ =>
+            {
+                var o = new TaskOptions<TRunnable>();
+                optionsAction?.Invoke(o);
+                return o;
+            });
 
             services.AddSingleton<ITask<TRunnable>, TaskRunner<TRunnable>>();
             services.AddSingleton<IHostedService>(s => s.GetRequiredService<ITask<TRunnable>>());
