@@ -4,6 +4,6 @@
     {
         Unknown,
         Success,
-        Fail
+        Fail,
     }
 }
