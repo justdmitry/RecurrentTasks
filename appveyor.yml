@@ -10,11 +10,3 @@ build:
 
 test_script:
 - ps: ./testpublishreport.ps1
-
-notifications:
-- provider: Slack
-  incoming_webhook:
-    secure: vd1CyDY+qcA6To11uFIgZjgVeWiu1y5VpuJprMq0FAFziOKMK0trEHOH5hMm7RSAn8ksXzoHhk1VkVjTBJlhopnM692O0rZFXhbcqBCweqw=
-  on_build_success: true
-  on_build_failure: true
-  on_build_status_changed: true
