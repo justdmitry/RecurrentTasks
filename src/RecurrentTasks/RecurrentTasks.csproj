@@ -11,7 +11,7 @@
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/justdmitry/RecurrentTasks.git</RepositoryUrl>
-    <Version>6.4.0</Version>
+    <Version>6.4.1</Version>
     <Description>RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...</Description>
     <Authors>just_dmitry</Authors>
     <Company />

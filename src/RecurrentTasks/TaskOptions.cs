@@ -7,6 +7,14 @@
     public class TaskOptions
     {
         /// <summary>
+        /// Maximum allowed <see cref="Interval"/> and <see cref="FirstRunDelay"/> values.
+        /// </summary>
+        public static readonly TimeSpan MaxInterval = TimeSpan.FromMilliseconds(int.MaxValue);
+
+        private TimeSpan interval;
+        private TimeSpan firstRunDelay = TimeSpan.FromSeconds(new Random().Next(10, 30));
+
+        /// <summary>
         /// If non-null, current thread culture will be set to this value before <see cref="IRunnable.RunAsync"/> is called
         /// </summary>
         public CultureInfo RunCulture { get; set; }
@@ -17,15 +25,48 @@
         public bool AutoStart { get; set; } = true;
 
         /// <summary>
-        /// Task run interval
+        /// Task run interval.
         /// </summary>
-        public TimeSpan Interval { get; set; }
+        public TimeSpan Interval
+        {
+            get
+            {
+                return interval;
+            }
+
+            set
+            {
+                if (value > MaxInterval)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(Interval), "Must be less than Int32.MaxValue milliseconds (approx. 24 days 20 hours)");
+                }
+
+                interval = value;
+            }
+        }
 
         /// <summary>
         /// First run delay (to prevent app freeze during startup due to many tasks initialization).
         /// Default is random value from 10 to 30 seconds.
         /// </summary>
-        public TimeSpan FirstRunDelay { get; set; } = TimeSpan.FromSeconds(new Random().Next(10, 30));
+        public TimeSpan FirstRunDelay
+        {
+            get
+            {
+                return interval;
+            }
+
+            set
+            {
+                if (value > MaxInterval)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(FirstRunDelay), "Must be less than Int32.MaxValue milliseconds (approx. 24 days 20 hours)");
+                }
+
+                interval = value;
+            }
+        }
+
 
         /// <summary>
         /// Return <b>false</b> to cancel/skip task run
