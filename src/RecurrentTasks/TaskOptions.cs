@@ -53,7 +53,7 @@
         {
             get
             {
-                return interval;
+                return firstRunDelay;
             }
 
             set
@@ -63,7 +63,7 @@
                     throw new ArgumentOutOfRangeException(nameof(FirstRunDelay), "Must be less than Int32.MaxValue milliseconds (approx. 24 days 20 hours)");
                 }
 
-                interval = value;
+                firstRunDelay = value;
             }
         }
 
