@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Copyright>Dmitry Popov, 2016-2019</Copyright>
     <AssemblyTitle>RecurrentTasks</AssemblyTitle>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
     <AssemblyName>RecurrentTasks</AssemblyName>
     <PackageId>RecurrentTasks</PackageId>
     <PackageTags>task;job;recurrent;recurring;aspnetcore</PackageTags>
@@ -11,7 +11,7 @@
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/justdmitry/RecurrentTasks.git</RepositoryUrl>
-    <Version>6.4.2</Version>
+    <Version>6.4.3</Version>
     <Description>RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...</Description>
     <Authors>just_dmitry</Authors>
     <Company />
@@ -44,6 +44,12 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
