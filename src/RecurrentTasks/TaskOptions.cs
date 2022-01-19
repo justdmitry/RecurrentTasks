@@ -76,5 +76,10 @@
         public Func<IServiceProvider, ITask, Task> AfterRunSuccess { get; set; }
 
         public Func<IServiceProvider, ITask, Exception, Task> AfterRunFail { get; set; }
+
+        /// <summary>
+        /// Disable the task's internal logger
+        /// </summary>
+        public bool DisableLogger { get; set; }
     }
 }

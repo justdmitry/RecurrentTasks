@@ -13,7 +13,7 @@
     {
         private readonly EventWaitHandle runImmediately = new AutoResetEvent(false);
 
-        private readonly ILogger logger;
+        private readonly Logger logger;
 
         private Task mainTask;
 
@@ -42,7 +42,9 @@
                 throw new ArgumentNullException(nameof(serviceScopeFactory));
             }
 
-            this.logger = loggerFactory.CreateLogger($"{this.GetType().Namespace}.{nameof(TaskRunner<TRunnable>)}<{typeof(TRunnable).FullName}>");
+            var originLogger = loggerFactory.CreateLogger($"{this.GetType().Namespace}.{nameof(TaskRunner<TRunnable>)}<{typeof(TRunnable).FullName}>");
+            logger = new Logger(originLogger, options);
+
             Options = options;
             ServiceScopeFactory = serviceScopeFactory;
             RunStatus = new TaskRunStatus();
@@ -286,6 +288,18 @@
             catch (Exception ex2)
             {
                 logger.LogError(0, ex2, "Error while processing AfterRunFail event (ignored)");
+            }
+        }
+
+        private ILogger GetLogger()
+        {
+            if (Options.DisableLogger)
+            {
+                return null;
+            }
+            else
+            {
+                return logger;
             }
         }
     }
