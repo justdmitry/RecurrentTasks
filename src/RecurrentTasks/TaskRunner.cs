@@ -290,17 +290,5 @@
                 logger.LogError(0, ex2, "Error while processing AfterRunFail event (ignored)");
             }
         }
-
-        private ILogger GetLogger()
-        {
-            if (Options.DisableLogger)
-            {
-                return null;
-            }
-            else
-            {
-                return logger;
-            }
-        }
     }
 }

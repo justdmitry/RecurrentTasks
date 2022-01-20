@@ -81,5 +81,8 @@
         /// Disable the task's internal logger
         /// </summary>
         public bool DisableLogger { get; set; }
+
+        public delegate LogFormat LogFormatterDelegate(string format, params object[] args);
+        public LogFormatterDelegate LogFormatter;
     }
 }
