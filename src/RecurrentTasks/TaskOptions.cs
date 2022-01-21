@@ -1,5 +1,6 @@
 ﻿namespace RecurrentTasks
 {
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Globalization;
     using System.Threading.Tasks;
@@ -13,6 +14,8 @@
 
         private TimeSpan interval;
         private TimeSpan firstRunDelay = TimeSpan.FromSeconds(new Random().Next(10, 30));
+
+        public ILogger Logger { get; set; }
 
         /// <summary>
         /// If non-null, current thread culture will be set to this value before <see cref="IRunnable.RunAsync"/> is called
