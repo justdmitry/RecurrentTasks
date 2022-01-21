@@ -42,7 +42,7 @@
                 throw new ArgumentNullException(nameof(serviceScopeFactory));
             }
 
-            this.logger = loggerFactory.CreateLogger($"{this.GetType().Namespace}.{nameof(TaskRunner<TRunnable>)}<{typeof(TRunnable).FullName}>");
+            this.logger = options.Logger ?? loggerFactory.CreateLogger($"{this.GetType().Namespace}.{nameof(TaskRunner<TRunnable>)}<{typeof(TRunnable).FullName}>");
             Options = options;
             ServiceScopeFactory = serviceScopeFactory;
             RunStatus = new TaskRunStatus();
