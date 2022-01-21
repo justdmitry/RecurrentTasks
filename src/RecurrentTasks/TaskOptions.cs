@@ -1,9 +1,9 @@
 ﻿namespace RecurrentTasks
 {
-    using Microsoft.Extensions.Logging;
     using System;
     using System.Globalization;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
 
     public class TaskOptions
     {
@@ -15,6 +15,9 @@
         private TimeSpan interval;
         private TimeSpan firstRunDelay = TimeSpan.FromSeconds(new Random().Next(10, 30));
 
+        /// <summary>
+        /// Custom logger (to use instead of calling loggerFactory.CreateLogger()).
+        /// </summary>
         public ILogger Logger { get; set; }
 
         /// <summary>
