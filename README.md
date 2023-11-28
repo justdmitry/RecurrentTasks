@@ -14,7 +14,7 @@ Written for **NET Core** (support for ASP.NET 5 and ASP.NET Core 1.0 and 2.0 is 
 
 ## Main features
 
-* TargetFrameworks: `netstandard2.0`, `netcoreapp3.1`, `net5.0`, `net6.0`
+* TargetFrameworks: `netstandard2.0`, `netcoreapp3.1`, `net6.0`, `net8.0`
 * Start and Stop your task at any time;
 * [`IHostedService`](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/multi-container-microservice-net-applications/background-tasks-with-ihostedservice) implemented for NET Core 2.0 (and above) app lifetime support
 * CancelationToken may be used for Stopping;
@@ -101,7 +101,7 @@ Use NuGet package [RecurrentTasks](https://www.nuget.org/packages/RecurrentTasks
 * Microsoft.Extensions.Hosting.Abstractions
 * Microsoft.Extensions.Logging.Abstractions
 
-All above: versions v2.0.0 / v3.1.0 / v5.0.0 / v6.0.0 according to TargetFramework used.
+All above: versions v2.0.0 / v3.1.0 / v6.0.0 / v8.0.0 according to TargetFramework used.
 
 ## Testing
 
