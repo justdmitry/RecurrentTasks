@@ -10,10 +10,10 @@
     <Compile Include="..\..\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CodecovUploader" Version="0.7.1" />
+    <PackageReference Include="CodecovUploader" Version="0.7.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
-    <PackageReference Include="OpenCover" Version="4.7.1221" />
+    <PackageReference Include="AltCover" Version="8.6.125" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
