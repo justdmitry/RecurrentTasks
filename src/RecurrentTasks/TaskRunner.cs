@@ -11,13 +11,12 @@
     public class TaskRunner<TRunnable> : ITask<TRunnable>
         where TRunnable : IRunnable
     {
-        private readonly EventWaitHandle runImmediately = new AutoResetEvent(false);
-
         private readonly ILogger logger;
+        private readonly IServiceScopeFactory serviceScopeFactory;
 
-        private Task mainTask;
-
-        private CancellationTokenSource cancellationTokenSource;
+        private Task? mainTask;
+        private CancellationTokenSource? stopTaskSource;
+        private CancellationTokenSource? waitForNextRunSource;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskRunner{TRunnable}"/> class.
@@ -27,24 +26,13 @@
         /// <param name="serviceScopeFactory">Фабрика для создания Scope (при запуске задачи)</param>
         public TaskRunner(ILoggerFactory loggerFactory, TaskOptions<TRunnable> options, IServiceScopeFactory serviceScopeFactory)
         {
-            if (loggerFactory == null)
-            {
-                throw new ArgumentNullException(nameof(loggerFactory));
-            }
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (serviceScopeFactory == null)
-            {
-                throw new ArgumentNullException(nameof(serviceScopeFactory));
-            }
+            ArgumentNullException.ThrowIfNull(loggerFactory);
+            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(serviceScopeFactory);
 
             this.logger = options.Logger ?? loggerFactory.CreateLogger($"{this.GetType().Namespace}.{nameof(TaskRunner<TRunnable>)}<{typeof(TRunnable).FullName}>");
             Options = options;
-            ServiceScopeFactory = serviceScopeFactory;
+            this.serviceScopeFactory = serviceScopeFactory;
             RunStatus = new TaskRunStatus();
         }
 
@@ -68,8 +56,6 @@
 
         /// <inheritdoc />
         public Type RunnableType => typeof(TRunnable);
-
-        private IServiceScopeFactory ServiceScopeFactory { get; set; }
 
         Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {
@@ -116,56 +102,69 @@
                 throw new InvalidOperationException("Already started");
             }
 
-            cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
-            mainTask = Task.Run(() => MainLoop(Options.FirstRunDelay, cancellationTokenSource.Token));
+            mainTask = MainLoop(Options.FirstRunDelay, cancellationToken);
         }
 
         /// <inheritdoc />
         public void Stop()
         {
             logger.LogInformation("Stop() called...");
-            if (mainTask == null)
+            if (stopTaskSource == null)
             {
                 throw new InvalidOperationException("Can't stop without start");
             }
 
-            cancellationTokenSource.Cancel();
+            stopTaskSource.Cancel();
         }
 
         /// <inheritdoc />
         public void TryRunImmediately()
         {
-            if (mainTask == null)
+            if (waitForNextRunSource == null)
             {
                 throw new InvalidOperationException("Can't run without Start");
             }
 
-            runImmediately.Set();
+            waitForNextRunSource.Cancel();
         }
 
-        protected void MainLoop(TimeSpan firstRunDelay, CancellationToken cancellationToken)
+        protected async Task MainLoop(TimeSpan firstRunDelay, CancellationToken cancellationToken)
         {
             logger.LogInformation("MainLoop() started. Running...");
+
+            stopTaskSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var stopToken = stopTaskSource.Token;
+
+            waitForNextRunSource = CancellationTokenSource.CreateLinkedTokenSource(stopToken);
+            var waitForNextRunToken = waitForNextRunSource.Token;
+
+            await Task.CompletedTask.ConfigureAwait(ConfigureAwaitOptions.ForceYielding);
+
             var sleepInterval = firstRunDelay;
-            var handles = new[] { cancellationToken.WaitHandle, runImmediately };
             while (true)
             {
                 logger.LogDebug("Sleeping for {0}...", sleepInterval);
                 RunStatus.NextRunTime = DateTimeOffset.Now.Add(sleepInterval);
-                WaitHandle.WaitAny(handles, sleepInterval);
 
-                if (cancellationToken.IsCancellationRequested)
+                await Task.Delay(sleepInterval, waitForNextRunToken).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+
+                if (stopToken.IsCancellationRequested)
                 {
                     // must stop and quit
                     logger.LogWarning("CancellationToken signaled, stopping...");
-                    mainTask = null;
-                    cancellationTokenSource = null;
                     break;
                 }
 
+                if (waitForNextRunToken.IsCancellationRequested)
+                {
+                    // token and token source have been used, recreate them.
+                    waitForNextRunSource?.Dispose();
+                    waitForNextRunSource = CancellationTokenSource.CreateLinkedTokenSource(stopToken);
+                    waitForNextRunToken = waitForNextRunSource.Token;
+                }
+
                 logger.LogDebug("It is time! Creating scope...");
-                using (var scope = ServiceScopeFactory.CreateScope())
+                using (var scope = serviceScopeFactory.CreateScope())
                 {
                     if (Options.RunCulture != null)
                     {
@@ -176,7 +175,7 @@
 
                     try
                     {
-                        var beforeRunResponse = OnBeforeRun(scope.ServiceProvider);
+                        var beforeRunResponse = await OnBeforeRun(scope.ServiceProvider);
 
                         if (!beforeRunResponse)
                         {
@@ -191,7 +190,7 @@
                             var runnable = (TRunnable)scope.ServiceProvider.GetRequiredService(typeof(TRunnable));
 
                             logger.LogInformation("Calling Run()...");
-                            runnable.RunAsync(this, scope.ServiceProvider, cancellationToken).GetAwaiter().GetResult();
+                            await runnable.RunAsync(this, scope.ServiceProvider, stopToken);
                             logger.LogInformation("Done.");
 
                             RunStatus.LastRunTime = startTime;
@@ -202,7 +201,7 @@
                             RunStatus.LastException = null;
                             IsRunningRightNow = false;
 
-                            OnAfterRunSuccess(scope.ServiceProvider);
+                            await OnAfterRunSuccess(scope.ServiceProvider);
                         }
                     }
                     catch (Exception ex)
@@ -218,7 +217,7 @@
                         RunStatus.FailsCount++;
                         IsRunningRightNow = false;
 
-                        OnAfterRunFail(scope.ServiceProvider, ex);
+                        await OnAfterRunFail(scope.ServiceProvider, ex);
                     }
                     finally
                     {
@@ -229,13 +228,21 @@
                 if (Options.Interval.Ticks == 0)
                 {
                     logger.LogWarning("Interval equal to zero. Stopping...");
-                    cancellationTokenSource.Cancel();
+                    stopTaskSource.Cancel();
                 }
                 else
                 {
                     sleepInterval = Options.Interval; // return to normal (important after first run only)
                 }
             }
+
+            waitForNextRunSource?.Dispose();
+            waitForNextRunSource = null;
+
+            stopTaskSource?.Dispose();
+            stopTaskSource = null;
+
+            mainTask = null;
 
             logger.LogInformation("MainLoop() finished.");
         }
@@ -245,9 +252,14 @@
         /// </summary>
         /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args</param>
         /// <returns>Return <b>falce</b> to cancel/skip task run</returns>
-        protected virtual bool OnBeforeRun(IServiceProvider serviceProvider)
+        protected virtual async Task<bool> OnBeforeRun(IServiceProvider serviceProvider)
         {
-            return Options.BeforeRun?.Invoke(serviceProvider, this).GetAwaiter().GetResult() ?? true;
+            if (Options.BeforeRun == null)
+            {
+                return true;
+            }
+
+            return await Options.BeforeRun(serviceProvider, this);
         }
 
         /// <summary>
@@ -257,15 +269,18 @@
         /// <remarks>
         /// Attention! Any exception, catched during AfterRunSuccess.Invoke, is written to error log and ignored.
         /// </remarks>
-        protected virtual void OnAfterRunSuccess(IServiceProvider serviceProvider)
+        protected virtual async Task OnAfterRunSuccess(IServiceProvider serviceProvider)
         {
-            try
+            if (Options.AfterRunSuccess != null)
             {
-                Options.AfterRunSuccess?.Invoke(serviceProvider, this).GetAwaiter().GetResult();
-            }
-            catch (Exception ex2)
-            {
-                logger.LogError(0, ex2, "Error while processing AfterRunSuccess event (ignored)");
+                try
+                {
+                    await Options.AfterRunSuccess(serviceProvider, this);
+                }
+                catch (Exception ex2)
+                {
+                    logger.LogError(0, ex2, "Error while processing AfterRunSuccess event (ignored)");
+                }
             }
         }
 
@@ -277,15 +292,18 @@
         /// <remarks>
         /// Attention! Any exception, catched during AfterRunFail.Invoke, is written to error log and ignored.
         /// </remarks>
-        protected virtual void OnAfterRunFail(IServiceProvider serviceProvider, Exception ex)
+        protected virtual async Task OnAfterRunFail(IServiceProvider serviceProvider, Exception ex)
         {
-            try
+            if (Options.AfterRunFail != null)
             {
-                Options.AfterRunFail?.Invoke(serviceProvider, this, ex).GetAwaiter().GetResult();
-            }
-            catch (Exception ex2)
-            {
-                logger.LogError(0, ex2, "Error while processing AfterRunFail event (ignored)");
+                try
+                {
+                    await Options.AfterRunFail(serviceProvider, this, ex);
+                }
+                catch (Exception ex2)
+                {
+                    logger.LogError(0, ex2, "Error while processing AfterRunFail event (ignored)");
+                }
             }
         }
     }

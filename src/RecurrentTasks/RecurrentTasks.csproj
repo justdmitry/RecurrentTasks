@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Copyright>Dmitry Popov, 2016-2022</Copyright>
+    <Copyright>Dmitry Popov, 2016-2024</Copyright>
     <AssemblyTitle>RecurrentTasks</AssemblyTitle>
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>RecurrentTasks</AssemblyName>
     <Nullable>enable</Nullable>
     <PackageId>RecurrentTasks</PackageId>
     <PackageTags>task;job;recurrent;recurring;aspnetcore</PackageTags>
-    <PackageReleaseNotes>https://github.com/justdmitry/RecurrentTasks/releases/tag/v6.6</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/justdmitry/RecurrentTasks/releases/tag/v7.0</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/justdmitry/RecurrentTasks</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/justdmitry/RecurrentTasks.git</RepositoryUrl>
-    <Version>6.6.0</Version>
+    <Version>7.0.0-beta</Version>
     <Description>RecurrentTasks for .NET allows you to run simple recurrent background tasks with specific intervals, without complex frameworks, persistance, etc...</Description>
     <Authors>just_dmitry</Authors>
     <Company />
