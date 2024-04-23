@@ -88,7 +88,7 @@
         {
             if (Options.FirstRunDelay < TimeSpan.Zero)
             {
-                throw new ArgumentOutOfRangeException(nameof(Options.FirstRunDelay), "First run delay can't be negative");
+                throw new InvalidOperationException("First run delay can't be negative");
             }
 
             if (Options.Interval < TimeSpan.Zero)
