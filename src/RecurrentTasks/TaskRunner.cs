@@ -173,6 +173,8 @@
                         CultureInfo.CurrentUICulture = Options.RunCulture;
                     }
 
+                    var startTime = DateTimeOffset.Now;
+
                     try
                     {
                         var beforeRunResponse = await OnBeforeRun(scope.ServiceProvider);
@@ -184,8 +186,6 @@
                         else
                         {
                             IsRunningRightNow = true;
-
-                            var startTime = DateTimeOffset.Now;
 
                             var runnable = (TRunnable)scope.ServiceProvider.GetRequiredService(typeof(TRunnable));
 
@@ -207,6 +207,7 @@
                     catch (Exception ex)
                     {
                         logger.LogWarning(0, ex, "Ooops, error (ignoring, see RunStatus.LastException or handle AfterRunFail event)");
+                        RunStatus.LastRunTime = startTime;
                         RunStatus.LastResult = TaskRunResult.Fail;
                         RunStatus.LastException = ex;
                         if (RunStatus.FailsCount == 0)
