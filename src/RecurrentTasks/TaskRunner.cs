@@ -21,9 +21,9 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskRunner{TRunnable}"/> class.
         /// </summary>
-        /// <param name="loggerFactory">Фабрика для создания логгера</param>
-        /// <param name="options">TaskOptions</param>
-        /// <param name="serviceScopeFactory">Фабрика для создания Scope (при запуске задачи)</param>
+        /// <param name="loggerFactory">Logger factory.</param>
+        /// <param name="options">TaskOptions instance.</param>
+        /// <param name="serviceScopeFactory">Service scope factory.</param>
         public TaskRunner(ILoggerFactory loggerFactory, TaskOptions<TRunnable> options, IServiceScopeFactory serviceScopeFactory)
         {
             ArgumentNullException.ThrowIfNull(loggerFactory);
@@ -143,7 +143,7 @@
             var sleepInterval = firstRunDelay;
             while (true)
             {
-                logger.LogDebug("Sleeping for {0}...", sleepInterval);
+                logger.LogDebug("Sleeping for {Interval}...", sleepInterval);
                 RunStatus.NextRunTime = DateTimeOffset.Now.Add(sleepInterval);
 
                 await Task.Delay(sleepInterval, waitForNextRunToken).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
@@ -168,7 +168,7 @@
                 {
                     if (Options.RunCulture != null)
                     {
-                        logger.LogDebug("Switching to {0} CultureInfo...", Options.RunCulture.Name);
+                        logger.LogDebug("Switching to {Name} CultureInfo...", Options.RunCulture.Name);
                         CultureInfo.CurrentCulture = Options.RunCulture;
                         CultureInfo.CurrentUICulture = Options.RunCulture;
                     }
@@ -248,10 +248,10 @@
         }
 
         /// <summary>
-        /// Invokes <see cref="BeforeRunAsync"/> handler (don't forget to call base.OnBeforeRun in override)
+        /// Invokes <see cref="BeforeRunAsync"/> handler (don't forget to call base.OnBeforeRun in override).
         /// </summary>
-        /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args</param>
-        /// <returns>Return <b>falce</b> to cancel/skip task run</returns>
+        /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args.</param>
+        /// <returns>Return <b>false</b> to cancel/skip task run.</returns>
         protected virtual async Task<bool> OnBeforeRun(IServiceProvider serviceProvider)
         {
             if (Options.BeforeRun == null)
@@ -263,9 +263,9 @@
         }
 
         /// <summary>
-        /// Invokes <see cref="AfterRunSuccessAsync"/> handler (don't forget to call base.OnAfterRunSuccess in override)
+        /// Invokes <see cref="AfterRunSuccessAsync"/> handler (don't forget to call base.OnAfterRunSuccess in override).
         /// </summary>
-        /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args</param>
+        /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args.</param>
         /// <remarks>
         /// Attention! Any exception, catched during AfterRunSuccess.Invoke, is written to error log and ignored.
         /// </remarks>
@@ -285,10 +285,10 @@
         }
 
         /// <summary>
-        /// Invokes <see cref="AfterRunFailAsync"/> handler - don't forget to call base.OnAfterRunSuccess in override
+        /// Invokes <see cref="AfterRunFailAsync"/> handler - don't forget to call base.OnAfterRunSuccess in override.
         /// </summary>
-        /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args</param>
-        /// <param name="ex"><see cref="Exception"/> to be passes in event args</param>
+        /// <param name="serviceProvider"><see cref="IServiceProvider"/> to be passed in event args.</param>
+        /// <param name="ex"><see cref="Exception"/> to be passes in event args.</param>
         /// <remarks>
         /// Attention! Any exception, catched during AfterRunFail.Invoke, is written to error log and ignored.
         /// </remarks>
