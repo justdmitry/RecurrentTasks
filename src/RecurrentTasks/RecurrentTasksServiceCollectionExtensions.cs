@@ -9,14 +9,11 @@
     {
         public static IServiceCollection AddTask<TRunnable>(
             this IServiceCollection services,
-            Action<TaskOptions<TRunnable>> optionsAction = null,
+            Action<TaskOptions<TRunnable>>? optionsAction = null,
             ServiceLifetime runnableLifetime = ServiceLifetime.Transient)
             where TRunnable : IRunnable
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+            ArgumentNullException.ThrowIfNull(services);
 
             var runnableType = typeof(TRunnable);
 

@@ -18,15 +18,15 @@
         /// <summary>
         /// Custom logger (to use instead of calling loggerFactory.CreateLogger()).
         /// </summary>
-        public ILogger Logger { get; set; }
+        public ILogger? Logger { get; set; }
 
         /// <summary>
-        /// If non-null, current thread culture will be set to this value before <see cref="IRunnable.RunAsync"/> is called
+        /// If non-null, current thread culture will be set to this value before <see cref="IRunnable.RunAsync"/> is called.
         /// </summary>
-        public CultureInfo RunCulture { get; set; }
+        public CultureInfo? RunCulture { get; set; }
 
         /// <summary>
-        /// Auto-start task when <see cref="IHostedService.StartAsync"/> is called (default <b>true</b>)
+        /// Auto-start task when <see cref="IHostedService.StartAsync"/> is called (default <b>true</b>).
         /// </summary>
         public bool AutoStart { get; set; } = true;
 
@@ -73,14 +73,13 @@
             }
         }
 
-
         /// <summary>
-        /// Return <b>false</b> to cancel/skip task run
+        /// Return <b>false</b> to cancel/skip task run.
         /// </summary>
-        public Func<IServiceProvider, ITask, Task<bool>> BeforeRun { get; set; }
+        public Func<IServiceProvider, ITask, Task<bool>>? BeforeRun { get; set; }
 
-        public Func<IServiceProvider, ITask, Task> AfterRunSuccess { get; set; }
+        public Func<IServiceProvider, ITask, Task>? AfterRunSuccess { get; set; }
 
-        public Func<IServiceProvider, ITask, Exception, Task> AfterRunFail { get; set; }
+        public Func<IServiceProvider, ITask, Exception, Task>? AfterRunFail { get; set; }
     }
 }

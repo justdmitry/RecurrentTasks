@@ -14,7 +14,7 @@
 
         public int FailsCount { get; set; }
 
-        public Exception LastException { get; set; }
+        public Exception? LastException { get; set; }
 
         public DateTimeOffset NextRunTime { get; set; }
     }
