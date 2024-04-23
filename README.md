@@ -6,7 +6,7 @@ Each task is a separate `Task`, which sleeps in background for a while, wakes up
 
 Ideal, when you don't need to run many/heavy tasks and don't want to use "big" solutions with persistence and other bells and whistles.
 
-Written for **NET Core** (support for ASP.NET 5 and ASP.NET Core 1.0 and 2.0 is dropped since v6, use [v5.0.0 release](https://github.com/justdmitry/RecurrentTasks/releases/tag/v5.0.0) if you need support for old frameworks).
+Optimized for **NET 8.0** ([v5.0.0 release](https://github.com/justdmitry/RecurrentTasks/releases/tag/v5.0.0) if you need support for ASP.NET 5, ASP.NET Core 1.0 and 2.0; or [v6.6.0 release](https://github.com/justdmitry/RecurrentTasks/releases/tag/v6.6.0) for `net7`, `net6` or `netstandard2.0`).
 
 [![Build status](https://ci.appveyor.com/api/projects/status/uucaowlbcxybi4v6/branch/master?svg=true)](https://ci.appveyor.com/project/justdmitry/recurrenttasks/branch/master) 
 [![NuGet](https://img.shields.io/nuget/v/RecurrentTasks.svg?maxAge=86400&style=flat)](https://www.nuget.org/packages/RecurrentTasks/) 
@@ -14,7 +14,7 @@ Written for **NET Core** (support for ASP.NET 5 and ASP.NET Core 1.0 and 2.0 is 
 
 ## Main features
 
-* TargetFrameworks: `netstandard2.0`, `netcoreapp3.1`, `net6.0`, `net8.0`
+* TargetFramework: `net8.0` (use older versions for previous frameworks);
 * Start and Stop your task at any time;
 * [`IHostedService`](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/multi-container-microservice-net-applications/background-tasks-with-ihostedservice) implemented for NET Core 2.0 (and above) app lifetime support
 * CancelationToken may be used for Stopping;
@@ -101,7 +101,7 @@ Use NuGet package [RecurrentTasks](https://www.nuget.org/packages/RecurrentTasks
 * Microsoft.Extensions.Hosting.Abstractions
 * Microsoft.Extensions.Logging.Abstractions
 
-All above: versions v2.0.0 / v3.1.0 / v6.0.0 / v8.0.0 according to TargetFramework used.
+All above: versions 8.0.0.
 
 ## Testing
 
