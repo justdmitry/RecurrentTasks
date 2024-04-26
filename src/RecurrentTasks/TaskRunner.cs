@@ -158,9 +158,9 @@
                 if (waitForNextRunToken.IsCancellationRequested)
                 {
                     // token and token source have been used, recreate them.
-                    waitForNextRunSource?.Dispose();
-                    waitForNextRunSource = CancellationTokenSource.CreateLinkedTokenSource(stopToken);
+                    var old = Interlocked.Exchange(ref waitForNextRunSource, CancellationTokenSource.CreateLinkedTokenSource(stopToken));
                     waitForNextRunToken = waitForNextRunSource.Token;
+                    old.Dispose();
                 }
 
                 logger.LogDebug("It is time! Creating scope...");
@@ -237,10 +237,10 @@
                 }
             }
 
-            waitForNextRunSource?.Dispose();
+            waitForNextRunSource.Dispose();
             waitForNextRunSource = null;
 
-            stopTaskSource?.Dispose();
+            stopTaskSource.Dispose();
             stopTaskSource = null;
 
             mainTask = null;
