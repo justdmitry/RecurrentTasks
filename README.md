@@ -8,8 +8,10 @@ Ideal, when you don't need to run many/heavy tasks and don't want to use "big" s
 
 Optimized for **NET 8.0** ([v5.0.0 release](https://github.com/justdmitry/RecurrentTasks/releases/tag/v5.0.0) if you need support for ASP.NET 5, ASP.NET Core 1.0 and 2.0; or [v6.6.0 release](https://github.com/justdmitry/RecurrentTasks/releases/tag/v6.6.0) for `net7`, `net6` or `netstandard2.0`).
 
+[![NuGet](https://img.shields.io/nuget/v/RecurrentTasks.svg)](https://www.nuget.org/packages/RecurrentTasks/) 
+![.NET 8.0](https://img.shields.io/badge/.NET-8.0-512BD4)
+![MIT License](https://img.shields.io/github/license/justdmitry/RecurrentTasks)
 [![Build status](https://ci.appveyor.com/api/projects/status/uucaowlbcxybi4v6/branch/master?svg=true)](https://ci.appveyor.com/project/justdmitry/recurrenttasks/branch/master) 
-[![NuGet](https://img.shields.io/nuget/v/RecurrentTasks.svg?maxAge=86400&style=flat)](https://www.nuget.org/packages/RecurrentTasks/) 
 [![codecov](https://codecov.io/gh/justdmitry/RecurrentTasks/branch/master/graph/badge.svg)](https://codecov.io/gh/justdmitry/RecurrentTasks)
 
 ## Main features
