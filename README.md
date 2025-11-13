@@ -6,9 +6,10 @@ Each task is a separate `Task`, which sleeps in background for a while, wakes up
 
 Ideal, when you don't need to run many/heavy tasks and don't want to use "big" solutions with persistence and other bells and whistles.
 
-Optimized for **NET 8.0** ([v5.0.0 release](https://github.com/justdmitry/RecurrentTasks/releases/tag/v5.0.0) if you need support for ASP.NET 5, ASP.NET Core 1.0 and 2.0; or [v6.6.0 release](https://github.com/justdmitry/RecurrentTasks/releases/tag/v6.6.0) for `net7`, `net6` or `netstandard2.0`).
+Optimized for **NET 8.0 and later** (use [v5.0.0 release](https://github.com/justdmitry/RecurrentTasks/releases/tag/v5.0.0) if you need support for ASP.NET 5, ASP.NET Core 1.0 and 2.0; or [v6.6.0 release](https://github.com/justdmitry/RecurrentTasks/releases/tag/v6.6.0) for `net7`, `net6` or `netstandard2.0`).
 
 [![NuGet](https://img.shields.io/nuget/v/RecurrentTasks.svg)](https://www.nuget.org/packages/RecurrentTasks/) 
+![.NET 10.0](https://img.shields.io/badge/.NET-10.0-512BD4)
 ![.NET 8.0](https://img.shields.io/badge/.NET-8.0-512BD4)
 ![MIT License](https://img.shields.io/github/license/justdmitry/RecurrentTasks)
 [![Build status](https://ci.appveyor.com/api/projects/status/uucaowlbcxybi4v6/branch/master?svg=true)](https://ci.appveyor.com/project/justdmitry/recurrenttasks/branch/master) 
@@ -16,7 +17,7 @@ Optimized for **NET 8.0** ([v5.0.0 release](https://github.com/justdmitry/Recurr
 
 ## Main features
 
-* TargetFramework: `net8.0` (use older versions for previous frameworks);
+* TargetFrameworks: `net10.0` and `net8.0` (use older versions for previous frameworks);
 * Start and Stop your task at any time;
 * [`IHostedService`](https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/multi-container-microservice-net-applications/background-tasks-with-ihostedservice) implemented for NET Core 2.0 (and above) app lifetime support
 * CancelationToken may be used for Stopping;
@@ -103,7 +104,7 @@ Use NuGet package [RecurrentTasks](https://www.nuget.org/packages/RecurrentTasks
 * Microsoft.Extensions.Hosting.Abstractions
 * Microsoft.Extensions.Logging.Abstractions
 
-All above: versions 8.0.0.
+All above: versions 8.0.0 or 10.0.0 (depending on your target framework).
 
 ## Testing
 

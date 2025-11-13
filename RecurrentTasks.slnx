@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="appveyor.yml" />
+    <File Path="codecov.yml" />
+    <File Path="GlobalSuppressions.cs" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="testpublishreport.ps1" />
+  </Folder>
+  <Project Path="sample/RecurrentTasks.Sample/RecurrentTasks.Sample.csproj" />
+  <Project Path="src/RecurrentTasks/RecurrentTasks.csproj" />
+  <Project Path="test/RecurrentTasks.Tests/RecurrentTasks.Tests.csproj" />
+</Solution>
