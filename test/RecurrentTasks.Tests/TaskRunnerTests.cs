@@ -52,7 +52,7 @@
         public void Task_Cant_Start_With_Negative_FirstDelay()
         {
             sampleTask.Options.FirstRunDelay = TimeSpan.FromSeconds(-1);
-            Assert.ThrowsAny<ArgumentOutOfRangeException>(() => sampleTask.Start());
+            Assert.ThrowsAny<InvalidOperationException>(() => sampleTask.Start());
         }
 
         [Fact]
