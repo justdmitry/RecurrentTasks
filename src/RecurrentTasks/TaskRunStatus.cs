@@ -17,5 +17,7 @@
         public Exception? LastException { get; set; }
 
         public DateTimeOffset NextRunTime { get; set; }
+
+        public TimeSpan LastRunDuration { get; set; }
     }
 }

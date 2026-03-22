@@ -1,6 +1,7 @@
 ﻿namespace RecurrentTasks
 {
     using System;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
@@ -143,7 +144,15 @@
             var sleepInterval = firstRunDelay;
             while (true)
             {
-                logger.LogDebug("Sleeping for {Interval}...", sleepInterval);
+                if (RunStatus.LastRunDuration == TimeSpan.Zero)
+                {
+                    logger.LogInformation("Sleeping for {Interval}.", sleepInterval);
+                }
+                else
+                {
+                    logger.LogInformation("Finished in {Elapsed}. Sleeping for {Interval}.", RunStatus.LastRunDuration, sleepInterval);
+                }
+
                 RunStatus.NextRunTime = DateTimeOffset.Now.Add(sleepInterval);
 
                 await Task.Delay(sleepInterval, waitForNextRunToken).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
@@ -174,6 +183,7 @@
                     }
 
                     var startTime = DateTimeOffset.Now;
+                    var stopwatch = Stopwatch.StartNew();
 
                     try
                     {
@@ -189,9 +199,9 @@
 
                             var runnable = (TRunnable)scope.ServiceProvider.GetRequiredService(typeof(TRunnable));
 
-                            logger.LogInformation("Calling Run()...");
+                            logger.LogDebug("Calling Run()...");
                             await runnable.RunAsync(this, scope.ServiceProvider, stopToken);
-                            logger.LogInformation("Done.");
+                            logger.LogDebug("Run() done.");
 
                             RunStatus.LastRunTime = startTime;
                             RunStatus.LastResult = TaskRunResult.Success;
@@ -222,6 +232,7 @@
                     }
                     finally
                     {
+                        RunStatus.LastRunDuration = stopwatch.Elapsed;
                         IsRunningRightNow = false;
                     }
                 }
@@ -229,7 +240,7 @@
                 if (Options.Interval.Ticks == 0)
                 {
                     logger.LogWarning("Interval equal to zero. Stopping...");
-                    stopTaskSource.Cancel();
+                    await stopTaskSource.CancelAsync();
                 }
                 else
                 {
