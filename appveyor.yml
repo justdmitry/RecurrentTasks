@@ -1,6 +1,6 @@
 version: N{build}
 configuration: Debug
-image: Visual Studio 2022
+image: Visual Studio 2026
 
 # net10 workaround from https://github.com/appveyor/ci/issues/3984
 install:
